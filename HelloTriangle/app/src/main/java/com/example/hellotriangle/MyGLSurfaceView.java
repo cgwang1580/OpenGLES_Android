@@ -8,7 +8,7 @@ public class MyGLSurfaceView{
 
     private final static String TAG = "MyGLSurfaceView";
     private GLSurfaceView mGLSurfaceView = null;
-    private MyGLRenderer mGLRenderer = null;
+    protected MyGLRenderer mGLRenderer = null;
     protected int mRenderTime = 0;
 
     MyGLSurfaceView () {}
