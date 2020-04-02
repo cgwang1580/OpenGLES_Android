@@ -7,7 +7,7 @@
 
 #define ERROR_UNKNOWN	0x001
 #define ERROR_INPUT		0x001 + 1
-#define ERROR_MEMORY		0x001 + 1
+#define ERROR_MEMORY	0x001 + 2
 
 typedef struct __tag_processor_handle
 {
