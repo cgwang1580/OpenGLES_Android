@@ -1,8 +1,8 @@
 #include <jni.h>
 #include <string>
-#include "processor.h"
+#include "header_out/processor.h"
 
-LPPROCESSOR_HANDLE pProcessorHandle = NULL;
+PHandle pProcessorHandle = NULL;
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -15,10 +15,10 @@ Java_com_example_hellotriangle_MyGLRenderer_onSurfaceCreatedJNI(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_hellotriangle_MyGLRenderer_onSurfaceChangedJNI(JNIEnv *env, jobject thiz)
+Java_com_example_hellotriangle_MyGLRenderer_onSurfaceChangedJNI(JNIEnv *env, jobject thiz, jint width, jint height)
 {
     // TODO: implement onSurfaceChangedJNI()
-    int ret = onSurfaceChanged(pProcessorHandle);
+    int ret = onSurfaceChanged(pProcessorHandle, width, height);
     return ret;
 }
 

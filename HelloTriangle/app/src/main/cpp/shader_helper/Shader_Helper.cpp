@@ -3,7 +3,8 @@
 
 Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentShaderCode) {
 
-	cout << "MyShader begin" << endl;
+	//cout << "MyShader begin" << endl;
+	MYLOGD("Shader_Helper begin");
 
 	// compile shader
 	unsigned int vertexShader, fragmentShader;

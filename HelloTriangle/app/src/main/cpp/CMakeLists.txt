@@ -13,11 +13,16 @@ cmake_minimum_required(VERSION 3.4.1)
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw
+        ${CMAKE_CURRENT_SOURCE_DIR}/header_out
 )
 
 set (LIST_SRC_FILES  native.cpp processor.cpp)
 
-list(APPEND LIST_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp)
+list(APPEND LIST_SRC_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
+        )
 
 add_library( # Sets the name of the library.
              processor

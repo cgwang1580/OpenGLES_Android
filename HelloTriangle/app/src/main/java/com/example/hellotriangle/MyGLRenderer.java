@@ -25,7 +25,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         MyLog.d(TAG, "onSurfaceChanged");
         //GLES30.glViewport(0, 0, width, height);
-        int ret = onSurfaceChangedJNI ();
+        int ret = onSurfaceChangedJNI (width, height);
         MyLog.d(TAG, "onSurfaceChangedJNI ret = " + ret);
     }
 
@@ -50,7 +50,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      * which is packaged with this application.
      */
     public native int onSurfaceCreatedJNI();
-    public native int onSurfaceChangedJNI ();
+    public native int onSurfaceChangedJNI (int width, int height);
     public native int onDrawFrameJNI ();
     public native int onSurfaceDestroyedJNI ();
 }
