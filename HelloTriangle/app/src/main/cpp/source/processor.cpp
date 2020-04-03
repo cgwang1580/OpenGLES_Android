@@ -11,32 +11,6 @@
 #include "unistd.h"
 #include "draw_utils.h"
 
-int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader)
-{
-	MYLOGD("CreateShaderHelper");
-	CHECK_NULL_INPUT(pShaderSet)
-
-	pShaderSet->vertexShader = vShader;
-	pShaderSet->fragmentShader = fShader;
-
-	char *sVertexShader = (char*)pShaderSet->vertexShader.c_str();
-	char *sFragShader = (char*)pShaderSet->fragmentShader.c_str();
-
-	MYLOGD("CreateShaderHelper sVertexShader = %s\n sFragShader = %s\n", sVertexShader, sFragShader);
-
-	if (pShaderSet->pShaderHelper)
-	{
-		MYLOGD("CreateShaderHelper pShaderSet->pShaderHelper is not null");
-		delete(pShaderSet->pShaderHelper);
-		pShaderSet->pShaderHelper = NULL;
-	}
-
-	pShaderSet->pShaderHelper = new Shader_Helper (sVertexShader, sFragShader);
-	CHECK_NULL_MALLOC(pShaderSet->pShaderHelper);
-
-	return 0;
-}
-
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
 	MYLOGD("onSurfaceCreated");

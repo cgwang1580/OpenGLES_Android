@@ -11,17 +11,19 @@ cmake_minimum_required(VERSION 3.4.1)
 # Gradle automatically packages shared libraries with your APK.
 
 include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/utils
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
-        ${CMAKE_CURRENT_SOURCE_DIR}/draw
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
+        ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
 
-set (LIST_SRC_FILES  native.cpp processor.cpp)
+set (LIST_SRC_FILES  native.cpp)
 
 list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         )
 
 add_library( # Sets the name of the library.

@@ -32,6 +32,4 @@ typedef struct __tag_processor_handle
 	ShaderSet mShaderSet;
 } ProcessorHandle, *LPProcessorHandle;
 
-int intShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader);
-
 #endif //HELLOTRIANGLE_PROCESSOR_H

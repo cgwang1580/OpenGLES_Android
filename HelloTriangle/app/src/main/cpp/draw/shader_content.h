@@ -11,16 +11,14 @@ using namespace std;
 
 static const string triangle_vertex_shader = "#version 300 es\n"
 									 "layout (location = 0) in vec3 aPos;\n"
-									 "out float g_color = 0.1f;\n"
 									 "void main()\n"
 									 "{\n"
 									 "    gl_Position = vec4(aPos, 1.0);\n"
-		  							 "	  g_color = "
 									 "}";
 
 static const string triangle_fragment_shader = "#version 300 es\n"
 											   "precision mediump float;\n"
-			  								   "in float g_color;"
+											   "uniform float g_color;\n"
 											   "out vec4 FragColor;\n"
 											   "\n"
 											   "void main()\n"

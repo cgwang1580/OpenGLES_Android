@@ -9,6 +9,32 @@
 #include "MyDefine.h"
 #include "Utils.h"
 
+int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader)
+{
+	MYLOGD("CreateShaderHelper");
+	CHECK_NULL_INPUT(pShaderSet)
+
+	pShaderSet->vertexShader = vShader;
+	pShaderSet->fragmentShader = fShader;
+
+	char *sVertexShader = (char*)pShaderSet->vertexShader.c_str();
+	char *sFragShader = (char*)pShaderSet->fragmentShader.c_str();
+
+	MYLOGD("CreateShaderHelper sVertexShader = %s\n sFragShader = %s\n", sVertexShader, sFragShader);
+
+	if (pShaderSet->pShaderHelper)
+	{
+		MYLOGD("CreateShaderHelper pShaderSet->pShaderHelper is not null");
+		delete(pShaderSet->pShaderHelper);
+		pShaderSet->pShaderHelper = NULL;
+	}
+
+	pShaderSet->pShaderHelper = new Shader_Helper (sVertexShader, sFragShader);
+	CHECK_NULL_MALLOC(pShaderSet->pShaderHelper);
+
+	return 0;
+}
+
 int drawTriangle (Shader_Helper *pShaderHelper)
 {
 	MYLOGD("drawTriangle");
@@ -31,14 +57,14 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	glBindVertexArray(0);
 
 	float vertex_multi[]{
-		0.75, -0.75f, 0,
-		0, -0.5f, 0,
-		-0.5f, -0.1f, 0,
-		0.2, -0.3, 0
+		0.75f, -0.75f, 0,
+		0.75f, -0.25f, 0,
+		-0.5f, -0.75f, 0,
+		-0.5f, -0.25f, 0,
 	};
 	int index_multi[]{
 		0, 1, 2,
-		1, 2, 3
+		1, 2, 3,
 	};
 	GLuint VAO2, VBO2, EBO;
 	glGenVertexArrays(1, &VAO2);
@@ -56,13 +82,14 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	glBindVertexArray(0);
 
 	pShaderHelper->use();
+	pShaderHelper->setfloat("g_color", 0.2f);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 
 	pShaderHelper->setfloat("g_color", 1.0f);
 	glBindVertexArray(VAO2);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, sizeof(index_multi)/ sizeof(int), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
 	glDeleteBuffers(1, &VBO);
@@ -73,4 +100,12 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	glDeleteVertexArrays(1, &VAO2);
 
 	return 0;
+}
+
+int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeight, const unsigned char *pData)
+{
+	MYLOGD("drawTexture");
+	CHECK_NULL_INPUT(pShaderHelper)
+	CHECK_NULL_INPUT(pData)
+
 }
