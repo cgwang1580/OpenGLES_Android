@@ -6,8 +6,9 @@
 #include "LogAndroid.h"
 #include "GLES3/gl3.h"
 #include <string>
-#include <MyDefine.h>
+#include <MyDefineUtils.h>
 #include <shader_content.h>
+#include <OpenImageHelper.h>
 #include "unistd.h"
 #include "draw_utils.h"
 
@@ -38,6 +39,7 @@ int onSurfaceChanged (const PHandle pProcessorHandle, const int width, const int
 {
 	MYLOGD("onSurfaceChanged");
 	glViewport(0, 0, width, height);
+	OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
 	return 0;
 }
 

@@ -5,9 +5,9 @@
 #ifndef HELLOTRIANGLE_PROCESSOR_H
 #define HELLOTRIANGLE_PROCESSOR_H
 
-#define ERROR_UNKNOWN	0x001
-#define ERROR_INPUT		0x001 + 1
-#define ERROR_MEMORY	0x001 + 2
+#define ERROR_OK		0x000
+#define ERROR_INPUT		ERROR_OK + 1
+#define ERROR_MEMORY	ERROR_OK + 2
 
 #define PHandle			void*
 

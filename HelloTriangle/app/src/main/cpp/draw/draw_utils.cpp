@@ -6,8 +6,9 @@
 #include "LogAndroid.h"
 #include "shader_content.h"
 #include "Shader_Helper.h"
-#include "MyDefine.h"
+#include "MyDefineUtils.h"
 #include "Utils.h"
+#include "OpenImageHelper.h"
 
 int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader)
 {
@@ -108,4 +109,5 @@ int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeig
 	CHECK_NULL_INPUT(pShaderHelper)
 	CHECK_NULL_INPUT(pData)
 
+	OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
 }
