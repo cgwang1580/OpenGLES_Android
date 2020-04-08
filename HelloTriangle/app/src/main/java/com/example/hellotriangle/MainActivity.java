@@ -7,11 +7,12 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String PROCESSOR_NAME = "processor.draw";
+
     private final static String TAG = "MainActivity";
 
-    // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("processor");
+        System.loadLibrary(PROCESSOR_NAME);
     }
 
     MyGLSurfaceView myGLSurfaceView;

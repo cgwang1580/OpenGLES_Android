@@ -25,6 +25,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            // let gradle pack the shared library into apk
+            jniLibs.srcDirs = ['libs']
+        }
+    }
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
@@ -32,6 +38,11 @@ android {
         }
     }
 }
+
+task cleanLibs(type: Delete, description: 'delete libs copy') {
+    delete fileTree ("libs").matching{include "**/*.so"}
+}
+clean.dependsOn 'cleanLibs'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -41,3 +52,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+

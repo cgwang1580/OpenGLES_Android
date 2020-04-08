@@ -110,4 +110,5 @@ int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeig
 	CHECK_NULL_INPUT(pData)
 
 	OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
+	return ERROR_OK;
 }

@@ -5,10 +5,18 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+set(TARGET_ARCH_FLAG ${ANDROID_ABI})
+set(TARGET_ABI ${TARGET_ARCH_FLAG})
+message(STATUS "TARGET_ABI is ${TARGET_ABI}")
+
+set(PROCESSOR_SO_NAME processor.draw)
+
+set(IF_USE_STATIC_PNG_LIB 1)
+if (IF_USE_STATIC_PNG_LIB EQUAL 1)
+    set(LIB_PNG_NAME png16_static)
+else ()
+    set(LIB_PNG_NAME png16)
+endif ()
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
@@ -16,9 +24,14 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/draw
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/source
+        ${CMAKE_CURRENT_SOURCE_DIR}/libpng
 )
 
-set (LIST_SRC_FILES  native.cpp)
+link_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/source_lib/${TARGET_ABI}
+)
+
+set(LIST_SRC_FILES native.cpp)
 
 list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
@@ -26,24 +39,23 @@ list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         )
 
-add_library( # Sets the name of the library.
-             processor
+add_library(${PROCESSOR_SO_NAME} SHARED ${LIST_SRC_FILES})
 
-             # Sets the library as a shared library.
-             SHARED
+set(LIST_TARGET_LINK ${LIB_PNG_NAME} GLESv3 log)
 
-             # Provides a relative path to your source file(s).
-             ${LIST_SRC_FILES})
+if (IF_USE_STATIC_PNG_LIB EQUAL 1)
+    list(APPEND LIST_TARGET_LINK z)
+endif()
 
-set(LIST_TARGET_LINK  GLESv3 log)
+target_link_libraries(
+        ${PROCESSOR_SO_NAME}
+        ${LIST_TARGET_LINK}
+)
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
-
-target_link_libraries( # Specifies the target library.
-                       processor
-
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${LIST_TARGET_LINK} )
+if (IF_USE_STATIC_PNG_LIB EQUAL 0)
+    add_custom_command(
+            TARGET ${PROCESSOR_SO_NAME}
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/source_lib/${TARGET_ABI}/lib${LIB_PNG_NAME}.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${TARGET_ABI}/lib${LIB_PNG_NAME}.so
+    )
+endif ()
