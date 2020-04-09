@@ -11,6 +11,11 @@
 #define CHECK_NULL_MALLOC(_p_)		if (!_p_) {return ERROR_MEMORY;}
 #define CHECK_NULL_INPUT(_p_)		if (!_p_) {return ERROR_INPUT;}
 
+#define CHECK_INPUT_NULL_BREAK(_pVal_, _pRet_, _sInfoTitle_)		if (NULL == (_pVal_)) { \
+																		*(_pRet_) = ERROR_INPUT; \
+																		MYLOGE ("%s memory alloc failed", (_sInfoTitle_)); \
+																		break; }
+
 #define CHECK_MALLOC_BREAK(_p_, _sInfo_)	if (NULL == _p_) { \
 												MYLOGE ("%s malloc failed", _sInfo_); \
 												break;}

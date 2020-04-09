@@ -9,10 +9,22 @@
 
 #define CHECK_RET_BREAK(_ret_)	if (0 == _ret_) {MYLOGE ("CHECK_RET_BREAK error"); break;}
 
+#define MY_FORMAT_RGB		0x100
+#define MY_FORMAT_RGBA		0x101
+
+typedef struct __tag_image_info_
+{
+	int width;
+	int height;
+	int format;
+	int channel[4];
+	unsigned char *buffer[4];
+}MyImageInfo, *LPMyImageInfo;
+
 class OpenImageHelper
 {
 public:
-	static int LoadPngFromFile (const char* sPath)
+	static int LoadPngFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
 	{
 		MYLOGD("LoadPngFromFile");
 		int ret = 0;
@@ -33,9 +45,19 @@ public:
 			MYLOGD("LoadPngFromFile png_image_finish_read ret = %d", ret);
 			CHECK_RET_BREAK (ret)
 
-			ret = png_image_write_to_file(&image, "/sdcard/testlibpng.png", 0, buffer, 0, NULL);
+			/*ret = png_image_write_to_file(&image, "/sdcard/testlibpng.png", 0, buffer, 0, NULL);
 			MYLOGD("LoadPngFromFile png_image_write_to_file ret = %d", ret);
-			CHECK_RET_BREAK (ret)
+			CHECK_RET_BREAK (ret)*/
+
+			CHECK_INPUT_NULL_BREAK (lpMyImageInfo, &ret, "LoadPngFromFile lpImageInfo");
+			lpMyImageInfo->width = static_cast<int>(image.width);
+			lpMyImageInfo->height = image.height;
+			if (PNG_FORMAT_RGBA == image.format) {
+				lpMyImageInfo->format = MY_FORMAT_RGBA;
+			} else{
+				lpMyImageInfo->format = MY_FORMAT_RGB;
+			}
+
 		} while(false);
 
 		png_image_free(&image);

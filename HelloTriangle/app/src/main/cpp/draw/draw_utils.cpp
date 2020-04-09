@@ -31,8 +31,9 @@ int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const stri
 	}
 
 	pShaderSet->pShaderHelper = new Shader_Helper (sVertexShader, sFragShader);
-	CHECK_NULL_MALLOC(pShaderSet->pShaderHelper);
+	CHECK_NULL_MALLOC(pShaderSet->pShaderHelper)
 
+	//OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
 	return 0;
 }
 
@@ -109,6 +110,6 @@ int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeig
 	CHECK_NULL_INPUT(pShaderHelper)
 	CHECK_NULL_INPUT(pData)
 
-	OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
+	//OpenImageHelper::LoadPngFromFile ("/sdcard/testlib.png");
 	return ERROR_OK;
 }
