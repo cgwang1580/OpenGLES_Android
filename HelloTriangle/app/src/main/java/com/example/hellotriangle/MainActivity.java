@@ -2,16 +2,12 @@ package com.example.hellotriangle;
 
 import android.Manifest;
 import android.content.Context;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.accessibility.AccessibilityManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.utils.PermissionHelper;
-import com.example.utils.PermissionInterface;
+import com.example.Permission.PermissionHelper;
+import com.example.Permission.PermissionInterface;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,20 +19,16 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "MainActivity";
 
-    private final static String []PermissionList = new String []{Manifest.permission.READ_EXTERNAL_STORAGE};
+    private final static String []PermissionList = new String []{Manifest.permission.READ_EXTERNAL_STORAGE , Manifest.permission.CAMERA};
 
     MyGLSurfaceView myGLSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyLog.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         requestPermission ();
-
-        if (null == myGLSurfaceView) {
-            InitGLSurfaceView(this);
-        }
     }
 
     public void requestPermission () {
@@ -63,22 +55,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume () {
+        MyLog.d(TAG, "onResume");
         super.onResume();
-        if (null != myGLSurfaceView) {
-            myGLSurfaceView.requestRender();
+        if (null == myGLSurfaceView) {
+            InitGLSurfaceView(this);
         }
+        //myGLSurfaceView.MyGLSurfaceResume();
+        myGLSurfaceView.requestRender();
     }
 
     @Override
     protected void onPause () {
+        MyLog.d(TAG, "onPause");
         super.onPause();
         if (null != myGLSurfaceView) {
-            myGLSurfaceView.mGLRenderer.surfaceDestroyed();
+            myGLSurfaceView.MyGLSurfacePause ();
         }
     }
 
     @Override
     protected void onDestroy() {
+        MyLog.d(TAG, "onDestroy");
         super.onDestroy();
     }
 

@@ -4,21 +4,27 @@ import android.opengl.GLSurfaceView;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static com.example.utils.CommonDefine.ERROR_OK;
+
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final static String TAG = "MyGLRenderer";
-    private MyGLSurfaceView mGLSurfaceView;
+    private MyGLSurfaceView mMyGLSurfaceView;
+
+    public boolean getCreateState() {
+        return bCreateState;
+    }
+
+    private boolean bCreateState = false;
 
     MyGLRenderer (MyGLSurfaceView glSurfaceView) {
-        mGLSurfaceView = glSurfaceView;
+        mMyGLSurfaceView = glSurfaceView;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         MyLog.d(TAG, "onSurfaceCreated");
-        //GLES30.glClearColor(0, 1.0f, 0, 1.0f);
-        int ret = onSurfaceCreatedJNI ();
-        MyLog.d(TAG, "onSurfaceCreatedJNI ret = " + ret);
+        GLSurfaceCreated ();
     }
 
     @Override
@@ -35,13 +41,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //GLES30.glClear (GL10.GL_COLOR_BUFFER_BIT);
         int ret = onDrawFrameJNI ();
         MyLog.d(TAG, "onDrawFrameJNI ret = " + ret);
-        mGLSurfaceView.mRenderTime = mGLSurfaceView.mRenderTime + 1;
-        mGLSurfaceView.requestRender();
+        mMyGLSurfaceView.mRenderTime = mMyGLSurfaceView.mRenderTime + 1;
+        mMyGLSurfaceView.requestRender();
     }
 
-    public void surfaceDestroyed () {
-        MyLog.d(TAG, "surfaceDestroyed");
+    public void GLSurfaceCreated () {
+        MyLog.d(TAG, "GLSurfaceCreated");
+        int ret = onSurfaceCreatedJNI();
+        MyLog.d(TAG, "onSurfaceCreatedJNI ret = " + ret);
+        bCreateState = (ret == ERROR_OK);
+    }
+
+    public void GLSurfaceDestroyed() {
+        MyLog.d(TAG, "GLSurfaceDestroyed");
         int ret = onSurfaceDestroyedJNI ();
+        bCreateState = false;
         MyLog.d(TAG, "onSurfaceDestroyedJNI ret = " + ret);
     }
 

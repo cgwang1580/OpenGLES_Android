@@ -17,7 +17,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 	if (NULL == ppProcessorHandle || NULL != *ppProcessorHandle)
 	{
-		MYLOGE("onSurfaceCreated ppProcessorHandle is not NULL");
+		MYLOGE("onSurfaceCreated ppProcessorHandle is NULL");
 		return ERROR_INPUT;
 	}
 
@@ -81,6 +81,7 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
+	SafeDelete (MyProcessorHandle->mShaderSet.pShaderHelper);
 	SafeFree (MyProcessorHandle);
 
 	return 0;

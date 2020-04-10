@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class MyLog {
 
-    static public boolean bShowLog = true;
+    static private boolean bShowLog = true;
 
     static public void e (String tag, String message) {
         if (bShowLog) {
