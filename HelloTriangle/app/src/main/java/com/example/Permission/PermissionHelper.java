@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
-import com.example.hellotriangle.MyLog;
+import com.example.helloopengles.MyLog;
 
 public class PermissionHelper {
 

@@ -1,4 +1,4 @@
-package com.example.hellotriangle;
+package com.example.helloopengles;
 
 import android.opengl.GLSurfaceView;
 import javax.microedition.khronos.egl.EGLConfig;

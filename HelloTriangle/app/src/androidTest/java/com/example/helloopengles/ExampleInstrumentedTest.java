@@ -1,4 +1,4 @@
-package com.example.hellotriangle;
+package com.example.helloopengles;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
