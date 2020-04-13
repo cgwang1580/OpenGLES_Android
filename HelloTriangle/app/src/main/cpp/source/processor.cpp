@@ -26,8 +26,11 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 	memset(MyProcessorHandle, 0, sizeof(ProcessorHandle));
 
-	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSet, triangle_vertex_shader, triangle_fragment_shader);
-	MYLOGD("onSurfaceCreated CreateShaderHelper ret = %d", ret);
+	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
+	MYLOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);
+
+	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
+	MYLOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -68,8 +71,11 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	glClearColor(r, g, b, alpha);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int ret = drawTriangle (MyProcessorHandle->mShaderSet.pShaderHelper);
-	MYLOGD("onDrawFrame drawTriangle = %d", ret);
+	/*int ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+	MYLOGD("onDrawFrame drawTriangle = %d", ret);*/
+
+	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	MYLOGD("onDrawFrame drawTexture = %d", ret);
 
 	sleep(1);
 	return 0;
@@ -81,7 +87,8 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
-	SafeDelete (MyProcessorHandle->mShaderSet.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
 	SafeFree (MyProcessorHandle);
 
 	return 0;

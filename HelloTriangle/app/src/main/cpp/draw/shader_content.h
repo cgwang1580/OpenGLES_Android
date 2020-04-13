@@ -26,4 +26,30 @@ static const string triangle_fragment_shader = "#version 300 es\n"
 											   "    FragColor = vec4(1.0f, g_color, 0.2f, 1.0f);\n"
 											   "}";
 
+
+
+static const string texture_vertex_shader = "#version 300 es\n"
+											"\n"
+											"layout (location = 0) in vec3 aPos;\n"
+											"layout (location = 1) in vec2 tPos;\n"
+											"out vec2 TexCoord;\n"
+											"\n"
+											"void main()\n"
+											"{\n"
+											"    gl_Position = vec4(aPos, 1.0);\n"
+											"    TexCoord = tPos;\n"
+											"}";
+
+static const string texture_fragment_shader = "#version 300 es\n"
+											  "precision mediump float;\n"
+											  "\n"
+											  "out vec4 FragColor;\n"
+											  "in vec2 TexCoord;\n"
+											  "uniform sampler2D texture1;\n"
+											  "\n"
+											  "void main()\n"
+											  "{\n"
+											  "    FragColor = texture (texture1, TexCoord);\n"
+											  "}";
+
 #endif //HELLOTRIANGLE_SHADER_CONTENT_H

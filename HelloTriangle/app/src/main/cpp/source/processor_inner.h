@@ -29,7 +29,8 @@ typedef struct __tag_processor_handle
 {
 	int mRenderTime;
 	ColorSet mColorSet;
-	ShaderSet mShaderSet;
+	ShaderSet mShaderSetTriangle;
+	ShaderSet mShaderSetTexture;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

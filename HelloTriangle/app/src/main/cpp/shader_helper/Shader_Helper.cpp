@@ -6,17 +6,17 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 	//cout << "MyShader begin" << endl;
 	MYLOGD("Shader_Helper begin");
 
-	// compile shader
+	// compile shader.cpp
 	unsigned int vertexShader, fragmentShader;
 	int result = 0;
 	char infoLog[MY_MAX_PATH * 2] = { 0 };
 
 	do {
-		// vertex shader
+		// vertex shader.cpp
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
 		glCompileShader(vertexShader);
-		// get compile shader result
+		// get compile shader.cpp result
 		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &result);
 		if (!result) {
 			glGetShaderInfoLog(vertexShader, MY_MAX_PATH * 2, NULL, infoLog);
@@ -25,11 +25,11 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 			break;
 		}
 
-		// fragment shader 
+		// fragment shader.cpp
 		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
 		glCompileShader(fragmentShader);
-		// get compile shader result
+		// get compile shader.cpp result
 		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);
 		if (!result) {
 			glGetShaderInfoLog(fragmentShader, MY_MAX_PATH * 2, NULL, infoLog);
@@ -38,7 +38,7 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 			break;
 		}
 
-		// shader program
+		// shader.cpp program
 		progreamId = glCreateProgram();
 		glAttachShader(progreamId, vertexShader);
 		glAttachShader(progreamId, fragmentShader);
@@ -52,7 +52,7 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 			break;
 		}
 
-		// delete shader
+		// delete shader.cpp
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 	} while (false);

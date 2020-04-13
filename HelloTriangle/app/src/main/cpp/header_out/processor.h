@@ -5,9 +5,13 @@
 #ifndef HELLOTRIANGLE_PROCESSOR_H
 #define HELLOTRIANGLE_PROCESSOR_H
 
-#define ERROR_OK		0x000
-#define ERROR_INPUT		ERROR_OK + 1
-#define ERROR_MEMORY	ERROR_OK + 2
+typedef enum _enum_error_code_
+{
+	ERROR_OK = 0x00,
+	ERROR_UNKNOWN,
+	ERROR_INPUT,
+	ERROR_MEMORY
+}ERROR_CODE;
 
 #define PHandle			void*
 
