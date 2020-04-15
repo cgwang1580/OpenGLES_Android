@@ -12,7 +12,7 @@ int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const stri
 
 int drawTriangle (Shader_Helper *pShaderHelper);
 
-int drawTexture (Shader_Helper *pShaderHelper);
+int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo);
 
 int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeight, const unsigned char *pData);
 

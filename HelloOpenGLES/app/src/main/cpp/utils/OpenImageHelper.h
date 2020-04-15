@@ -5,7 +5,10 @@
 #ifndef HELLOTRIANGLE_OPENIMAGEHELPER_H
 #define HELLOTRIANGLE_OPENIMAGEHELPER_H
 
+#include <processor.h>
 #include "png.h"
+#include "LogAndroid.h"
+#include "MyDefineUtils.h"
 
 #define CHECK_PNG_RET_BREAK(_pRet_)	if (0 == *(_pRet_)) {MYLOGE ("CHECK_PNG_RET_BREAK error"); *(_pRet_) = ERROR_UNKNOWN; break;}
 
@@ -151,6 +154,38 @@ public:
 
 		png_image_free(&image);
 		SafeFree(buffer);
+		return ret;
+	}
+
+	static ERROR_CODE SaveImageToPng (const LPMyImageInfo lpMyImageInfo, const char* sPath)
+	{
+		MYLOGD("SaveImageToPng");
+		CHECK_NULL_INPUT(lpMyImageInfo)
+		CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
+		CHECK_NULL_INPUT(sPath)
+		MYLOGD("SaveImageToPng sPath = %s", sPath);
+
+		ERROR_CODE ret = ERROR_OK;
+
+		png_image image {0};
+		image.version = PNG_IMAGE_VERSION;
+		image.width = static_cast<png_uint_32 >(lpMyImageInfo->width);
+		image.height = static_cast<png_uint_32 >(lpMyImageInfo->height);
+		if (MY_FORMAT_RGBA == lpMyImageInfo->format) {
+			image.format = PNG_FORMAT_RGBA;
+		} else{
+			image.format = PNG_FORMAT_RGB;
+		}
+		image.colormap_entries = 256;
+		png_bytep buffer = lpMyImageInfo->buffer[0];
+		int png_ret = png_image_write_to_file(&image, sPath, 0, buffer, 0, NULL);
+		MYLOGD("SaveImageToPng png_image_write_to_file ret = %d", ret);
+		if (0 == png_ret)
+		{
+			MYLOGE("SaveImageToPng png_image_write_to_file warning_or_error = %d message = %s",
+					image.warning_or_error, image.message);
+			ret = ERROR_IMAGE;
+		}
 		return ret;
 	}
 };

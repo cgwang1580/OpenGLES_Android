@@ -31,6 +31,13 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
 	MYLOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
+	if (NULL != MyProcessorHandle->lpMyImageInfo)
+	{
+		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
+	}
+	MyProcessorHandle->lpMyImageInfo = (LPMyImageInfo)malloc(sizeof(MyImageInfo));
+	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo);
+	memset (MyProcessorHandle->lpMyImageInfo, 0 , sizeof(MyImageInfo));
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -74,7 +81,13 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	/*int ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	MYLOGD("onDrawFrame drawTriangle = %d", ret);*/
 
-	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	if (NULL != MyProcessorHandle->lpMyImageInfo && NULL == MyProcessorHandle->lpMyImageInfo->buffer[0])
+	{
+		char IMAGE_PATH [MAX_PATH] {"/sdcard/OpenGLESTest/testlib.png"};
+		OpenImageHelper::LoadPngFromFile(IMAGE_PATH, MyProcessorHandle->lpMyImageInfo);
+		OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
+	}
+	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
 	MYLOGD("onDrawFrame drawTexture = %d", ret);
 
 	sleep(1);
@@ -89,6 +102,11 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	if (NULL != MyProcessorHandle->lpMyImageInfo)
+	{
+		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
+		SafeFree(MyProcessorHandle->lpMyImageInfo);
+	}
 	SafeFree (MyProcessorHandle);
 
 	return 0;

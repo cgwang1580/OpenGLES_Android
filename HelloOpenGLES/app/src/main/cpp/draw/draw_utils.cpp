@@ -103,20 +103,17 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	return 0;
 }
 
-int drawTexture (Shader_Helper *pShaderHelper)
+int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 {
 	MYLOGD("drawTexture");
 	CHECK_NULL_INPUT(pShaderHelper)
-
-	char IMAGE_PATH [MAX_PATH] {"/sdcard/testlib.png"};
-	MyImageInfo myImageInfo {0};
-	OpenImageHelper::LoadPngFromFile(IMAGE_PATH, &myImageInfo);
+	CHECK_NULL_INPUT(lpMyImageInfo)
 
 	float vertex_texture [] {
-		1.0f, -0.5, 0,      1.0f, 1.0f,
-		1.0f, 0.5f, 0,   	1.0f, 0,
-		-1.0f, 0.5f, 0,  	0, 0,
-		-1.0, -0.5, 0,     	0, 1.0f
+		1.0f, -0.5, 0,		1.0f, 0, 0,      	1.0f, 1.0f,
+		1.0f, 0.5f, 0,		0, 1.0f, 0,   		1.0f, 0,
+		-1.0f, 0.5f, 0,		0, 0, 1.0f,  		0, 0,
+		-1.0, -0.5, 0,		1.0f, 1.0f, 0,     	0, 1.0f
 	};
 
 	int vertex_index [] {
@@ -136,10 +133,12 @@ int drawTexture (Shader_Helper *pShaderHelper)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_index), vertex_index, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3* sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
+	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
@@ -150,13 +149,13 @@ int drawTexture (Shader_Helper *pShaderHelper)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	if (NULL != myImageInfo.buffer[0]) {
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, myImageInfo.width, myImageInfo.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, myImageInfo.buffer[0]);
+	if (NULL != lpMyImageInfo->buffer[0]) {
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, lpMyImageInfo->width, lpMyImageInfo->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
 		glGenerateMipmap (GL_TEXTURE_2D);
 	} else {
 		MYLOGE("drawTexture myImageInfo.buffer is NULL");
 	}
-	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
+	OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
 
 	pShaderHelper->use();
 	pShaderHelper->setInt("texture1", 0);

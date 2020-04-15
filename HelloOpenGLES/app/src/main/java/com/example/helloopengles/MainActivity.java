@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "MainActivity";
 
-    private final static String []PermissionList = new String []{Manifest.permission.READ_EXTERNAL_STORAGE , Manifest.permission.CAMERA};
+    private final static String []PermissionList = new String []{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE , Manifest.permission.CAMERA};
 
     MyGLSurfaceView myGLSurfaceView;
 
