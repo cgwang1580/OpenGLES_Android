@@ -163,6 +163,28 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, sizeof(vertex_index)/ sizeof(int), GL_UNSIGNED_INT, 0);
+
+	GLint viewPort[4] {0};
+	glGetIntegerv(GL_VIEWPORT, viewPort);
+	MYLOGD("drawTexture viewPort %d %d %d %d", viewPort[0], viewPort[1], viewPort[2], viewPort[3]);
+	int width = viewPort[2];
+	/*int height1 = 0.25 * viewPort[3];
+	int height2 = 0.75 * viewPort[3];*/
+	int height = viewPort[3];
+	MyImageInfo myImageInfo {0};
+	myImageInfo.width = width;
+	myImageInfo.height = height;
+	myImageInfo.format = MY_FORMAT_RGBA;
+	myImageInfo.channel[0] = myImageInfo.width;
+	OpenImageHelper::AllocMyImageInfo(&myImageInfo);
+	//glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	START_TIME ("glReadPixels")
+		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, myImageInfo.buffer[0]);
+	STOP_TIME ("glReadPixels")
+	OpenImageHelper::ExchangeImageCoordinateY(&myImageInfo);
+	OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/texture.png");
+	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
+
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 

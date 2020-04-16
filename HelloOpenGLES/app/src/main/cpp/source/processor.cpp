@@ -85,7 +85,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	{
 		char IMAGE_PATH [MAX_PATH] {"/sdcard/OpenGLESTest/testlib.png"};
 		OpenImageHelper::LoadPngFromFile(IMAGE_PATH, MyProcessorHandle->lpMyImageInfo);
-		OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
+		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
 	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
 	MYLOGD("onDrawFrame drawTexture = %d", ret);

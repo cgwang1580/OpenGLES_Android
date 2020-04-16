@@ -159,7 +159,7 @@ public:
 
 	static ERROR_CODE SaveImageToPng (const LPMyImageInfo lpMyImageInfo, const char* sPath)
 	{
-		MYLOGD("SaveImageToPng");
+		CAL_TIME_COST("SaveImageToPng");
 		CHECK_NULL_INPUT(lpMyImageInfo)
 		CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
 		CHECK_NULL_INPUT(sPath)
@@ -187,6 +187,48 @@ public:
 			ret = ERROR_IMAGE;
 		}
 		return ret;
+	}
+
+	static void ExchangeImageCoordinateY (LPMyImageInfo lpMyImageInfo)
+	{
+		CAL_TIME_COST("ExchangeImageCoordinateY");
+		if (NULL == lpMyImageInfo || NULL == lpMyImageInfo->buffer[0])
+		{
+			MYLOGE("ExchangeImageCoordinateY ERROR_INPUT");
+			return;
+		}
+
+		int channelNum = 0;
+		switch (lpMyImageInfo->format)
+		{
+			case MY_FORMAT_RGBA:
+				channelNum = 4;
+				break;
+			case MY_FORMAT_RGB:
+				channelNum = 3;
+				break;
+			default:
+				break;
+		}
+
+		int pitch = lpMyImageInfo->channel[0];
+		int height = lpMyImageInfo->height;
+		int lineSize = channelNum * pitch;
+		unsigned char *lineBuffer = NULL;
+		lineBuffer = (unsigned char *)malloc (lineSize);
+		memset(lineBuffer, 0, lineSize);
+
+		int num = height / 2;
+		for (int i = 0; i < num; ++i)
+		{
+			memcpy(lineBuffer, lpMyImageInfo->buffer[0] + i * lineSize, lineSize);
+			memcpy(lpMyImageInfo->buffer[0] + i * lineSize, (lpMyImageInfo->buffer[0] + (height - i - 1) * lineSize), lineSize);
+			memcpy((lpMyImageInfo->buffer[0] + (height - i - 1) * lineSize), lineBuffer, lineSize);
+			memset(lineBuffer, 0, sizeof(lineSize));
+		}
+
+		SafeFree(lineBuffer);
+		return;
 	}
 };
 
