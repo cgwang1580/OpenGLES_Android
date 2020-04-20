@@ -1,4 +1,4 @@
-package com.example.helloopengles;
+package com.cgwang1580.helloopengles;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.example.Permission;
+package com.cgwang1580.Permission;
 
 public interface PermissionInterface {
 

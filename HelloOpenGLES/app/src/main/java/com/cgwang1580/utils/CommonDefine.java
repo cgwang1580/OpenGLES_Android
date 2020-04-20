@@ -1,4 +1,4 @@
-package com.example.utils;
+package com.cgwang1580.utils;
 
 public class CommonDefine {
 

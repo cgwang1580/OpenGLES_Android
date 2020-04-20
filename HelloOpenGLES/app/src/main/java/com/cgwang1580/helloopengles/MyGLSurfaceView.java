@@ -1,4 +1,4 @@
-package com.example.helloopengles;
+package com.cgwang1580.helloopengles;
 
 import android.app.Activity;
 import android.content.Context;

@@ -1,10 +1,10 @@
-package com.example.helloopengles;
+package com.cgwang1580.helloopengles;
 
 import android.opengl.GLSurfaceView;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import static com.example.utils.CommonDefine.ERROR_OK;
+import static com.cgwang1580.utils.CommonDefine.ERROR_OK;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 

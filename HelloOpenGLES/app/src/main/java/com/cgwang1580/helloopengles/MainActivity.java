@@ -1,4 +1,4 @@
-package com.example.helloopengles;
+package com.cgwang1580.helloopengles;
 
 import android.Manifest;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.example.Permission.PermissionHelper;
-import com.example.Permission.PermissionInterface;
+import com.cgwang1580.Permission.PermissionHelper;
+import com.cgwang1580.Permission.PermissionInterface;
 
 public class MainActivity extends AppCompatActivity {
 
