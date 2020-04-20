@@ -12,7 +12,7 @@
 
 int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader)
 {
-	MYLOGD("CreateShaderHelper");
+	LOGD("CreateShaderHelper");
 	CHECK_NULL_INPUT(pShaderSet)
 
 	pShaderSet->vertexShader = vShader;
@@ -21,11 +21,11 @@ int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const stri
 	char *sVertexShader = (char*)pShaderSet->vertexShader.c_str();
 	char *sFragShader = (char*)pShaderSet->fragmentShader.c_str();
 
-	MYLOGD("CreateShaderHelper sVertexShader = %s\n sFragShader = %s\n", sVertexShader, sFragShader);
+	LOGD("CreateShaderHelper sVertexShader = %s\n sFragShader = %s\n", sVertexShader, sFragShader);
 
 	if (pShaderSet->pShaderHelper)
 	{
-		MYLOGD("CreateShaderHelper pShaderSet->pShaderHelper is not null");
+		LOGD("CreateShaderHelper pShaderSet->pShaderHelper is not null");
 		delete(pShaderSet->pShaderHelper);
 		pShaderSet->pShaderHelper = NULL;
 	}
@@ -38,7 +38,7 @@ int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const stri
 
 int drawTriangle (Shader_Helper *pShaderHelper)
 {
-	MYLOGD("drawTriangle");
+	LOGD("drawTriangle");
 	CHECK_NULL_INPUT(pShaderHelper)
 
 	float vertex[]{
@@ -105,7 +105,7 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 
 int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 {
-	MYLOGD("drawTexture");
+	LOGD("drawTexture");
 	CHECK_NULL_INPUT(pShaderHelper)
 	CHECK_NULL_INPUT(lpMyImageInfo)
 
@@ -153,7 +153,7 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, lpMyImageInfo->width, lpMyImageInfo->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
 		glGenerateMipmap (GL_TEXTURE_2D);
 	} else {
-		MYLOGE("drawTexture myImageInfo.buffer is NULL");
+		LOGE("drawTexture myImageInfo.buffer is NULL");
 	}
 	OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
 
@@ -166,7 +166,7 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 
 	GLint viewPort[4] {0};
 	glGetIntegerv(GL_VIEWPORT, viewPort);
-	MYLOGD("drawTexture viewPort %d %d %d %d", viewPort[0], viewPort[1], viewPort[2], viewPort[3]);
+	LOGD("drawTexture viewPort %d %d %d %d", viewPort[0], viewPort[1], viewPort[2], viewPort[3]);
 	int width = viewPort[2];
 	/*int height1 = 0.25 * viewPort[3];
 	int height2 = 0.75 * viewPort[3];*/
@@ -197,7 +197,7 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 
 int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeight, const unsigned char *pData)
 {
-	MYLOGD("drawTexture");
+	LOGD("drawTexture");
 	CHECK_NULL_INPUT(pShaderHelper)
 	CHECK_NULL_INPUT(pData)
 

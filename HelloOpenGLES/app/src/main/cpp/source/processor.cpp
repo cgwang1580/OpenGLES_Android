@@ -13,11 +13,11 @@
 
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
-	MYLOGD("onSurfaceCreated");
+	LOGD("onSurfaceCreated");
 
 	if (NULL == ppProcessorHandle || NULL != *ppProcessorHandle)
 	{
-		MYLOGE("onSurfaceCreated ppProcessorHandle is NULL");
+		LOGE("onSurfaceCreated ppProcessorHandle is NULL");
 		return ERROR_INPUT;
 	}
 
@@ -27,10 +27,10 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	memset(MyProcessorHandle, 0, sizeof(ProcessorHandle));
 
 	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
-	MYLOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);
 
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
-	MYLOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
 	if (NULL != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
@@ -46,14 +46,14 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 int onSurfaceChanged (const PHandle pProcessorHandle, const int width, const int height)
 {
-	MYLOGD("onSurfaceChanged");
+	LOGD("onSurfaceChanged");
 	glViewport(0, 0, width, height);
 	return 0;
 }
 
 int onDrawFrame (const PHandle pProcessorHandle)
 {
-	MYLOGD("onDrawFrame");
+	LOGD("onDrawFrame");
 	CHECK_NULL_INPUT (pProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)pProcessorHandle;
 	++MyProcessorHandle->mRenderTime;
@@ -74,12 +74,12 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	r = r > 1 ? 1.0f : r;
 	g = g > 1 ? 1.0f : g;
 	b = b > 1 ? 1.0f : b;
-	MYLOGD("onDrawFrame r = %f, g = %f, b = %f, alpha = %f", r, g, b, alpha);
+	LOGD("onDrawFrame r = %f, g = %f, b = %f, alpha = %f", r, g, b, alpha);
 	glClearColor(r, g, b, alpha);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/*int ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
-	MYLOGD("onDrawFrame drawTriangle = %d", ret);*/
+	LOGD("onDrawFrame drawTriangle = %d", ret);*/
 
 	if (NULL != MyProcessorHandle->lpMyImageInfo && NULL == MyProcessorHandle->lpMyImageInfo->buffer[0])
 	{
@@ -88,7 +88,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
 	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
-	MYLOGD("onDrawFrame drawTexture = %d", ret);
+	LOGD("onDrawFrame drawTexture = %d", ret);
 
 	sleep(1);
 	return 0;
@@ -96,7 +96,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 
 int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 {
-	MYLOGD("onSurfaceDestroyed");
+	LOGD("onSurfaceDestroyed");
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;

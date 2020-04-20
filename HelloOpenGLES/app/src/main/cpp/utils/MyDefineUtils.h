@@ -16,12 +16,12 @@
 
 #define CHECK_NULL_INPUT_BREAK(_pVal_, _pRet_, _sInfoTitle_)		if (NULL == (_pVal_)) { \
 																		*(_pRet_) = ERROR_INPUT; \
-																		MYLOGE ("%s memory alloc failed", (_sInfoTitle_)); \
+																		LOGE ("%s memory alloc failed", (_sInfoTitle_)); \
 																		break; }
 
 #define CHECK_MALLOC_BREAK(_p_, _pRet_, _sInfoTitle_)				if (NULL == _p_) { \
 																		*(_pRet_) = ERROR_MEMORY; \
-																		MYLOGE ("%s malloc failed", _sInfoTitle_); \
+																		LOGE ("%s malloc failed", _sInfoTitle_); \
 																		break;}
 
 #endif //HELLOTRIANGLE_MYDEFINEUTILS_H

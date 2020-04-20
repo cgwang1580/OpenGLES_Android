@@ -4,7 +4,7 @@
 Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentShaderCode) {
 
 	//cout << "MyShader begin" << endl;
-	MYLOGD("Shader_Helper begin");
+	LOGD("Shader_Helper begin");
 
 	// compile shader.cpp
 	unsigned int vertexShader, fragmentShader;
@@ -21,7 +21,7 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 		if (!result) {
 			glGetShaderInfoLog(vertexShader, MY_MAX_PATH * 2, NULL, infoLog);
 			//cout << "glCompileShader vertexShader error, " << infoLog << endl;
-			MYLOGE ("glCompileShader vertexShader error, %s", infoLog);
+			LOGE ("glCompileShader vertexShader error, %s", infoLog);
 			break;
 		}
 
@@ -34,7 +34,7 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 		if (!result) {
 			glGetShaderInfoLog(fragmentShader, MY_MAX_PATH * 2, NULL, infoLog);
 			//cout << "glCompileShader fragmentShader error, " << infoLog << endl;
-			MYLOGE ("glCompileShader fragmentShader error, %s ", infoLog);
+			LOGE ("glCompileShader fragmentShader error, %s ", infoLog);
 			break;
 		}
 
@@ -48,7 +48,7 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 		if (!result) {
 			glGetProgramInfoLog(progreamId, MY_MAX_PATH * 2, NULL, infoLog);
 			//cout << "glLinkProgram progreamId error, " << infoLog << endl;
-			MYLOGE ("glLinkProgram progreamId error, %s ", infoLog);
+			LOGE ("glLinkProgram progreamId error, %s ", infoLog);
 			break;
 		}
 

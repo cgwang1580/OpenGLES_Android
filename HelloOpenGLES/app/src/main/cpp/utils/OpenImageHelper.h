@@ -10,7 +10,7 @@
 #include "LogAndroid.h"
 #include "MyDefineUtils.h"
 
-#define CHECK_PNG_RET_BREAK(_pRet_)	if (0 == *(_pRet_)) {MYLOGE ("CHECK_PNG_RET_BREAK error"); *(_pRet_) = ERROR_UNKNOWN; break;}
+#define CHECK_PNG_RET_BREAK(_pRet_)	if (0 == *(_pRet_)) {LOGE ("CHECK_PNG_RET_BREAK error"); *(_pRet_) = ERROR_UNKNOWN; break;}
 
 #define MY_FORMAT_RGB		0x100
 #define MY_FORMAT_RGBA		0x101
@@ -35,10 +35,10 @@ public:
 	 */
 	static int CalMyImageBufferLength (const LPMyImageInfo lpMyImageInfo)
 	{
-		MYLOGD("CalMyImageBufferLength");
+		LOGD("CalMyImageBufferLength");
 		if (NULL == lpMyImageInfo || 0 == lpMyImageInfo->width || 0 == lpMyImageInfo->height)
 		{
-			MYLOGE("AllocMyImageInfo lpMyImageInfo wrong");
+			LOGE("AllocMyImageInfo lpMyImageInfo wrong");
 			return 0;
 		}
 		int lSize = 0;
@@ -63,20 +63,20 @@ public:
 	 */
 	static ERROR_CODE AllocMyImageInfo (LPMyImageInfo lpMyImageInfo)
 	{
-		MYLOGD("AllocMyImageInfo");
+		LOGD("AllocMyImageInfo");
 		if (NULL == lpMyImageInfo || 0 == lpMyImageInfo->width || 0 == lpMyImageInfo->height || NULL != lpMyImageInfo->buffer[0])
 		{
-			MYLOGE("AllocMyImageInfo lpMyImageInfo wrong");
+			LOGE("AllocMyImageInfo lpMyImageInfo wrong");
 			return ERROR_INPUT;
 		}
 
 		ERROR_CODE ret = ERROR_OK;
 		int lSize = 0;
 		lSize = CalMyImageBufferLength(lpMyImageInfo);
-		MYLOGD("AllocMyImageInfo CalMyImageBufferLength lSize = %d", lSize);
+		LOGD("AllocMyImageInfo CalMyImageBufferLength lSize = %d", lSize);
 		if (0 == lSize)
 		{
-			MYLOGE("AllocMyImageInfo lSize = 0");
+			LOGE("AllocMyImageInfo lSize = 0");
 			return ERROR_INPUT;
 		}
 		switch (lpMyImageInfo->format)
@@ -95,7 +95,7 @@ public:
 
 	static ERROR_CODE FreeMyImageInfo (LPMyImageInfo lpMyImageInfo)
 	{
-		MYLOGD("FreeMyImageInfo");
+		LOGD("FreeMyImageInfo");
 		CHECK_NULL_INPUT(lpMyImageInfo)
 		SafeFree(lpMyImageInfo->buffer[0]);
 		memset(lpMyImageInfo, 0, sizeof(MyImageInfo));
@@ -110,7 +110,7 @@ public:
 	 */
 	static int LoadPngFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
 	{
-		MYLOGD("LoadPngFromFile");
+		LOGD("LoadPngFromFile");
 		int ret = 0;
 		png_image image {0};
 		image.version = PNG_IMAGE_VERSION;
@@ -118,7 +118,7 @@ public:
 		do
 		{
 			ret = png_image_begin_read_from_file (&image, sPath);
-			MYLOGD("LoadPngFromFile png_image_begin_read_from_file ret = %d", ret);
+			LOGD("LoadPngFromFile png_image_begin_read_from_file ret = %d", ret);
 			CHECK_PNG_RET_BREAK (&ret)
 			image.format = PNG_FORMAT_RGBA;
 			buffer = (png_bytep)malloc(PNG_IMAGE_SIZE(image));
@@ -126,11 +126,11 @@ public:
 			memset(buffer, 0, PNG_IMAGE_SIZE(image));
 
 			ret = png_image_finish_read(&image, NULL, buffer, 0, NULL);
-			MYLOGD("LoadPngFromFile png_image_finish_read ret = %d", ret);
+			LOGD("LoadPngFromFile png_image_finish_read ret = %d", ret);
 			CHECK_PNG_RET_BREAK (&ret)
 
 			/*ret = png_image_write_to_file(&image, "/sdcard/testlibpng.png", 0, buffer, 0, NULL);
-			MYLOGD("LoadPngFromFile png_image_write_to_file ret = %d", ret);
+			LOGD("LoadPngFromFile png_image_write_to_file ret = %d", ret);
 			CHECK_PNG_RET_BREAK (ret)*/
 
 			CHECK_NULL_INPUT_BREAK (lpMyImageInfo, &ret, "LoadPngFromFile lpImageInfo")
@@ -145,7 +145,7 @@ public:
 			ret = AllocMyImageInfo(lpMyImageInfo);
 			if (ERROR_OK != ret)
 			{
-				MYLOGE("LoadPngFromFile AllocMyImageInfo ret = %d", ret);
+				LOGE("LoadPngFromFile AllocMyImageInfo ret = %d", ret);
 				break;
 			}
 			memcpy(lpMyImageInfo->buffer[0], buffer, PNG_IMAGE_SIZE(image));
@@ -163,7 +163,7 @@ public:
 		CHECK_NULL_INPUT(lpMyImageInfo)
 		CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
 		CHECK_NULL_INPUT(sPath)
-		MYLOGD("SaveImageToPng sPath = %s", sPath);
+		LOGD("SaveImageToPng sPath = %s", sPath);
 
 		ERROR_CODE ret = ERROR_OK;
 
@@ -179,10 +179,10 @@ public:
 		image.colormap_entries = 256;
 		png_bytep buffer = lpMyImageInfo->buffer[0];
 		int png_ret = png_image_write_to_file(&image, sPath, 0, buffer, 0, NULL);
-		MYLOGD("SaveImageToPng png_image_write_to_file ret = %d", ret);
+		LOGD("SaveImageToPng png_image_write_to_file ret = %d", ret);
 		if (0 == png_ret)
 		{
-			MYLOGE("SaveImageToPng png_image_write_to_file warning_or_error = %d message = %s",
+			LOGE("SaveImageToPng png_image_write_to_file warning_or_error = %d message = %s",
 					image.warning_or_error, image.message);
 			ret = ERROR_IMAGE;
 		}
@@ -194,7 +194,7 @@ public:
 		CAL_TIME_COST("ExchangeImageCoordinateY");
 		if (NULL == lpMyImageInfo || NULL == lpMyImageInfo->buffer[0])
 		{
-			MYLOGE("ExchangeImageCoordinateY ERROR_INPUT");
+			LOGE("ExchangeImageCoordinateY ERROR_INPUT");
 			return;
 		}
 
