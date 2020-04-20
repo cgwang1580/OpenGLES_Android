@@ -19,22 +19,24 @@ else ()
 endif ()
 
 include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/inc
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/draw
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/source
-        ${CMAKE_CURRENT_SOURCE_DIR}/libpng
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader
 )
 
 link_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/source_lib/${TARGET_ABI}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/lib/${TARGET_ABI}
 )
 
 set(LIST_SRC_FILES native.cpp)
 
 list(APPEND LIST_SRC_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper/Shader_Helper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         )
@@ -56,6 +58,6 @@ if (IF_USE_STATIC_PNG_LIB EQUAL 0)
     add_custom_command(
             TARGET ${PROCESSOR_SO_NAME}
             PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/source_lib/${TARGET_ABI}/lib${LIB_PNG_NAME}.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${TARGET_ABI}/lib${LIB_PNG_NAME}.so
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/${TARGET_ABI}/lib${LIB_PNG_NAME}.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${TARGET_ABI}/lib${LIB_PNG_NAME}.so
     )
 endif ()

@@ -7,7 +7,7 @@
 #include "GLES3/gl3.h"
 #include <string>
 #include <MyDefineUtils.h>
-#include <shader_content.h>
+#include "../shader/shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
 
