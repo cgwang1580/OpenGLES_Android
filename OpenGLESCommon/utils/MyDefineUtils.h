@@ -5,7 +5,7 @@
 #ifndef HELLOTRIANGLE_MYDEFINEUTILS_H
 #define HELLOTRIANGLE_MYDEFINEUTILS_H
 
-#include "processor.h"
+#include "common.h"
 
 #define MAX_PATH	256
 

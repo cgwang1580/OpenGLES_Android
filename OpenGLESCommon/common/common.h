@@ -1,0 +1,17 @@
+//
+// Created by wcg3031 on 2020/4/21.
+//
+
+#ifndef HELLOOPENGLES_COMMON_H
+#define HELLOOPENGLES_COMMON_H
+
+typedef enum _enum_error_code_
+{
+	ERROR_OK = 0x00,
+	ERROR_UNKNOWN,
+	ERROR_INPUT,
+	ERROR_MEMORY,
+	ERROR_IMAGE
+}ERROR_CODE;
+
+#endif //HELLOOPENGLES_COMMON_H

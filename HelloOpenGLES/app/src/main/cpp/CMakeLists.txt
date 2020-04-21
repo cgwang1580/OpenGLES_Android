@@ -22,6 +22,7 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/common
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/draw

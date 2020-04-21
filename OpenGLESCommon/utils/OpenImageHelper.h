@@ -5,7 +5,6 @@
 #ifndef HELLOTRIANGLE_OPENIMAGEHELPER_H
 #define HELLOTRIANGLE_OPENIMAGEHELPER_H
 
-#include <processor.h>
 #include "png.h"
 #include "LogAndroid.h"
 #include "MyDefineUtils.h"
