@@ -14,6 +14,6 @@ int drawTriangle (Shader_Helper *pShaderHelper);
 
 int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo);
 
-int drawTexture (Shader_Helper *pShaderHelper, const int nWidth, const int nHeight, const unsigned char *pData);
+int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo);
 
 #endif //HELLOTRIANGLE_DRAW_UTILS_H

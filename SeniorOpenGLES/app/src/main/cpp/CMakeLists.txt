@@ -22,11 +22,13 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/common
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/draw
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/shader
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
 )
 
 link_directories(
@@ -36,7 +38,7 @@ link_directories(
 set(LIST_SRC_FILES native.cpp)
 
 list(APPEND LIST_SRC_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper/Shader_Helper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         )

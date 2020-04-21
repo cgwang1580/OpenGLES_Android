@@ -31,6 +31,13 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
+
+	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBO, fbo_vertex_shader, fbo_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBO ret = %d", ret);
+
+	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
+
 	if (NULL != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
@@ -58,7 +65,8 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)pProcessorHandle;
 	++MyProcessorHandle->mRenderTime;
 
-	float r = 0;
+	int ret = ERROR_OK;
+	/*float r = 0;
 	float g = 0;
 	float b = 0;
 	MyProcessorHandle->mColorSet.alpha = 1.0;
@@ -75,11 +83,9 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	g = g > 1 ? 1.0f : g;
 	b = b > 1 ? 1.0f : b;
 	LOGD("onDrawFrame r = %f, g = %f, b = %f, alpha = %f", r, g, b, alpha);
-	glClearColor(r, g, b, alpha);
+	glClearColor(r, g, b, alpha);*/
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	/*int ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
-	LOGD("onDrawFrame drawTriangle = %d", ret);*/
 
 	if (NULL != MyProcessorHandle->lpMyImageInfo && NULL == MyProcessorHandle->lpMyImageInfo->buffer[0])
 	{
@@ -87,9 +93,26 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::LoadPngFromFile(IMAGE_PATH, MyProcessorHandle->lpMyImageInfo);
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
-	int ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
-	LOGD("onDrawFrame drawTexture = %d", ret);
+	int nDrawType = 2;
 
+	switch (nDrawType)
+	{
+		case 0:
+			ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+			LOGD("onDrawFrame drawTriangle ret = %d", ret);
+			break;
+		case 1:
+			ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
+			LOGD("onDrawFrame drawTexture ret = %d", ret);
+			break;
+		case 2:
+			ret = drawFBO(MyProcessorHandle->mShaderSetFBO.pShaderHelper, MyProcessorHandle->mShaderSetFBONormal.pShaderHelper,
+						  MyProcessorHandle->lpMyImageInfo);
+			LOGD("onDrawFrame drawFBO ret = %d", ret);
+			break;
+		default:
+			break;
+	}
 	sleep(1);
 	return 0;
 }

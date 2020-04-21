@@ -6,6 +6,7 @@
 #define HELLOTRIANGLE_PROCESSOR_INNER_H
 
 #include "Shader_Helper.h"
+#include "processor.h"
 #include <string>
 #include <OpenImageHelper.h>
 
@@ -32,6 +33,8 @@ typedef struct __tag_processor_handle
 	ColorSet mColorSet;
 	ShaderSet mShaderSetTriangle;
 	ShaderSet mShaderSetTexture;
+	ShaderSet mShaderSetFBO;
+	ShaderSet mShaderSetFBONormal;
 	LPMyImageInfo lpMyImageInfo;
 } ProcessorHandle, *LPProcessorHandle;
 

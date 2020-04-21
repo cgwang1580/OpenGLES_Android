@@ -11,7 +11,16 @@ typedef enum _enum_error_code_
 	ERROR_UNKNOWN,
 	ERROR_INPUT,
 	ERROR_MEMORY,
-	ERROR_IMAGE
+	ERROR_IMAGE,
+	ERROR_GL_STATUS
 }ERROR_CODE;
+
+typedef struct _tag_rect_
+{
+	int left;
+	int top;
+	int right;
+	int bottom;
+}SRECT, *LPSRECT;
 
 #endif //HELLOOPENGLES_COMMON_H
