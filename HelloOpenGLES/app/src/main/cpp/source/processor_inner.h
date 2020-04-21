@@ -6,6 +6,7 @@
 #define HELLOTRIANGLE_PROCESSOR_INNER_H
 
 #include "Shader_Helper.h"
+#include "processor.h"
 #include <string>
 #include <OpenImageHelper.h>
 
