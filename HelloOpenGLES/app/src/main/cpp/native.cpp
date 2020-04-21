@@ -6,7 +6,7 @@ PHandle pProcessorHandle = NULL;
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_helloopengles_MyGLRenderer_onSurfaceCreatedJNI(JNIEnv *env, jobject thiz)
+Java_com_cgwang1580_helloopengles_MyGLRenderer_onSurfaceCreatedJNI(JNIEnv *env, jobject thiz)
 {
     // TODO: implement onSurfaceCreatedJNI()
     int ret = onSurfaceCreated(&pProcessorHandle);
@@ -15,7 +15,7 @@ Java_com_example_helloopengles_MyGLRenderer_onSurfaceCreatedJNI(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_helloopengles_MyGLRenderer_onSurfaceChangedJNI(JNIEnv *env, jobject thiz, jint width, jint height)
+Java_com_cgwang1580_helloopengles_MyGLRenderer_onSurfaceChangedJNI(JNIEnv *env, jobject thiz, jint width, jint height)
 {
     // TODO: implement onSurfaceChangedJNI()
     int ret = onSurfaceChanged(pProcessorHandle, width, height);
@@ -24,14 +24,14 @@ Java_com_example_helloopengles_MyGLRenderer_onSurfaceChangedJNI(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_helloopengles_MyGLRenderer_onDrawFrameJNI(JNIEnv *env, jobject thiz)
+Java_com_cgwang1580_helloopengles_MyGLRenderer_onDrawFrameJNI(JNIEnv *env, jobject thiz)
 {
     // TODO: implement onDrawFrameJNI()
     int ret = onDrawFrame(pProcessorHandle);
     return ret;
 }extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_helloopengles_MyGLRenderer_onSurfaceDestroyedJNI(JNIEnv *env, jobject thiz)
+Java_com_cgwang1580_helloopengles_MyGLRenderer_onSurfaceDestroyedJNI(JNIEnv *env, jobject thiz)
 {
 	// TODO: implement onSurfaceDestroyedJNI()
     int ret = onSurfaceDestroyed(&pProcessorHandle);
