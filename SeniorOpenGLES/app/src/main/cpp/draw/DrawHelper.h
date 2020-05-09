@@ -15,20 +15,28 @@ class DrawHelper
 public:
 	static void GetOneTexture(const GLenum target, GLuint *pTexture)
 	{
-		LOGD("getOneTexture");
+		LOGD("getOneTexture target = %d", target);
 		glGenTextures(1, pTexture);
 		glBindTexture(target, *pTexture);
-		glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (GL_TEXTURE_2D == target)
+		{
+			glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		else if (GL_TEXTURE_EXTERNAL_OES == target)
+		{
+			glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
 		glBindTexture(target, GL_NONE);
 	}
 
 	static void CheckGLError(const char *TAG)
 	{
 		GLenum error = glGetError();
-		if (EGL_SUCCESS != error)
+		if (0 != error)
 			LOGE("%s CheckGLError error_code = %d", TAG, error);
 	}
 

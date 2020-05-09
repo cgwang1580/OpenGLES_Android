@@ -21,7 +21,7 @@ public:
 	 * @param lpMyImageInfo
 	 * @return Size of image buffer
 	 */
-	static int CalMyImageBufferLength (const LPMyImageInfo lpMyImageInfo)
+	static long CalMyImageBufferLength (const LPMyImageInfo lpMyImageInfo)
 	{
 		LOGD("CalMyImageBufferLength");
 		if (NULL == lpMyImageInfo || 0 == lpMyImageInfo->width || 0 == lpMyImageInfo->height)
@@ -49,19 +49,20 @@ public:
 	 * @param lpMyImageInfo
 	 * @return
 	 */
-	static ERROR_CODE AllocMyImageInfo (LPMyImageInfo lpMyImageInfo)
+	static long AllocMyImageInfo (LPMyImageInfo lpMyImageInfo)
 	{
 		LOGD("AllocMyImageInfo");
-		if (NULL == lpMyImageInfo || 0 == lpMyImageInfo->width || 0 == lpMyImageInfo->height || NULL != lpMyImageInfo->buffer[0])
+		if (NULL == lpMyImageInfo || 0 == lpMyImageInfo->width || 0 == lpMyImageInfo->channel[0]
+			|| 0 == lpMyImageInfo->height || NULL != lpMyImageInfo->buffer[0])
 		{
 			LOGE("AllocMyImageInfo lpMyImageInfo wrong");
 			return ERROR_INPUT;
 		}
 
 		ERROR_CODE ret = ERROR_OK;
-		int lSize = 0;
+		long lSize = 0;
 		lSize = CalMyImageBufferLength(lpMyImageInfo);
-		LOGD("AllocMyImageInfo CalMyImageBufferLength lSize = %d", lSize);
+		LOGD("AllocMyImageInfo CalMyImageBufferLength lSize = %ld", lSize);
 		if (0 == lSize)
 		{
 			LOGE("AllocMyImageInfo lSize = 0");
@@ -78,7 +79,7 @@ public:
 			default:
 				break;
 		}
-		return ret;
+		return lSize;
 	}
 
 	static ERROR_CODE FreeMyImageInfo (LPMyImageInfo lpMyImageInfo)
@@ -217,6 +218,12 @@ public:
 
 		SafeFree(lineBuffer);
 		return;
+	}
+
+	static int LoadYuvFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
+	{
+		LOGD("LoadYuvFromFile");
+
 	}
 };
 

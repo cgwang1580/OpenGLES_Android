@@ -33,6 +33,7 @@ private:
 	void convertImageFormat2Hardware(const int srcFormat, int &dstFormat);
 	void convertHardwareFormat2Image(const int srcFormat, int &dstFormat);
 	void setCreateState (const bool state);
+	void setHardwareContext();
 
 public:
 	AHardwareBufferHelper ();

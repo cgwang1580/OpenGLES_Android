@@ -29,14 +29,16 @@ AHardwareBufferHelper::~AHardwareBufferHelper()
 int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight, const int format, const GLuint textureId)
 {
 	LOGD("createGPUBuffer");
-	int ret;
+	int ret = ERROR_OK;
 	if (bCreated)
 		return ERROR_OK;
 	AHardwareBuffer_Desc aBufferDesc{0};
 	aBufferDesc.width = (uint32_t)nWidth;
 	aBufferDesc.height = (uint32_t)nHeight;
 	aBufferDesc.layers = 1;
-	aBufferDesc.format = (uint32_t)format;
+	int nBufferFormat = 0;
+	convertImageFormat2Hardware(format, nBufferFormat);
+	aBufferDesc.format = (uint32_t)nBufferFormat;
 	aBufferDesc.usage = (uint32_t)USAGE;
 	aBufferDesc.stride = (uint32_t)aBufferDesc.width;
 	aBufferDesc.rfu0 = 0;
@@ -54,6 +56,7 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 	EGLClientBuffer eglClientBuffer = eglGetNativeClientBufferANDROID (pAHardwareBuffer);
 	DrawHelper::CheckEGLError("eglGetNativeClientBufferANDROID");
 
+	setHardwareContext();
 	pEGLImageKHR = eglCreateImageKHR (pEGLDisplay, pEGLContext, EGL_NATIVE_BUFFER_ANDROID, eglClientBuffer, nullptr);
 	DrawHelper::CheckEGLError("eglCreateImageKHR");
 	if (EGL_NO_IMAGE_KHR == pEGLImageKHR)
@@ -180,4 +183,11 @@ void AHardwareBufferHelper::setCreateState (const bool state)
 {
 	LOGD("setCreateState state = %d", state);
 	bCreated = state;
+}
+
+void AHardwareBufferHelper::setHardwareContext()
+{
+	LOGD("setHardwareContext");
+	pEGLDisplay = eglGetCurrentDisplay();
+	pEGLContext = EGL_NO_CONTEXT;
 }

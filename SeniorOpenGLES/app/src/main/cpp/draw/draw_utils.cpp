@@ -366,6 +366,8 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 {
 	LOGD ("drawByHardwareBuffer");
 
+	int ret = ERROR_OK;
+
 	CHECK_NULL_INPUT(pShaderHelperFBO)
 	CHECK_NULL_INPUT(pShaderHelperNormal)
 	CHECK_NULL_INPUT(pHardwareBufferHelper)
@@ -421,64 +423,83 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 
 	int nImageWidth = lpMyImageInfo->width;
 	int nImageHeight = lpMyImageInfo->height;
+	int nImageFormat = lpMyImageInfo->format;
 
-	// create a color texture as src
-	GLuint textureColorId;
-	DrawHelper::GetOneTexture(GL_TEXTURE_2D, &textureColorId);
-	glBindTexture(GL_TEXTURE_2D, textureColorId);
-	if (NULL != lpMyImageInfo->buffer[0]) {
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
-		glGenerateMipmap (GL_TEXTURE_2D);
-	} else {
-		LOGE("drawTexture myImageInfo.buffer is NULL");
-	}
-	OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
-
-	// get OES texture
-	GLuint nOESTextureId;
-	DrawHelper::GetOneTexture(GL_TEXTURE_EXTERNAL_OES, &nOESTextureId);
-	auto *pBufferHelper = (AHardwareBufferHelper *)pHardwareBufferHelper;
-	if (!pBufferHelper->getCreateState())
-	{
-		pBufferHelper->createGPUBuffer(lpMyImageInfo->width, lpMyImageInfo->height, lpMyImageInfo->format, nOESTextureId);
-	}
-
-	GLuint FBO;
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	// bind color texture
-	glBindTexture(GL_TEXTURE_2D, nOESTextureId);
-	// attach a texture to frame buffer object
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_EXTERNAL_OES, nOESTextureId, 0);
-	glBindTexture(GL_TEXTURE_EXTERNAL_OES, GL_NONE);
-
-	// check frame buffer state
-	GLenum tmpStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (GL_FRAMEBUFFER_COMPLETE != tmpStatus)
-	{
-		LOGE("glCheckFramebufferStatus tmpStatus = %d", tmpStatus);
-		return ERROR_GL_STATUS;
-	}
-
-	// draw offscreen
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glViewport(0, 0, nImageWidth, nImageHeight);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	pShaderHelperFBO->use();
-	glBindVertexArray(VAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureColorId);
-	pShaderHelperFBO->setInt("screenTexture", 0);
-	DrawHelper::CheckGLError("drawFBO");
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
-	DrawHelper::CheckGLError("drawFBO glDrawElements");
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	glBindVertexArray(GL_NONE);
-
+	GLuint textureColorId = GL_NONE;
+	GLuint nOESTextureId = GL_NONE;
+	GLuint FBO = GL_NONE;
 	MyImageInfo myImageInfo{0};
-	pBufferHelper->getGPUBufferDate(&myImageInfo);
-	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
+	do
+	{
+		// create a color texture as src
+		const GLenum targetColor = GL_TEXTURE_2D;
+		DrawHelper::GetOneTexture(targetColor, &textureColorId);
+		glBindTexture(targetColor, textureColorId);
+		if (NULL != lpMyImageInfo->buffer[0]) {
+			glTexImage2D (targetColor, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
+			glGenerateMipmap (targetColor);
+		} else {
+			LOGE("drawByHardwareBuffer myImageInfo.buffer is NULL");
+		}
+		glBindTexture(targetColor, GL_NONE);
+		DrawHelper::CheckGLError("glBindTexture");
+		OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
+
+		// get OES texture
+		const GLenum targetOES = GL_TEXTURE_EXTERNAL_OES;
+		DrawHelper::GetOneTexture(targetOES, &nOESTextureId);
+		DrawHelper::CheckGLError("GetOneTexture targetOES");
+		auto *pBufferHelper = (AHardwareBufferHelper *)pHardwareBufferHelper;
+		if (!pBufferHelper->getCreateState())
+		{
+			ret = pBufferHelper->createGPUBuffer(nImageWidth, nImageHeight, nImageFormat, nOESTextureId);
+			LOGE("drawByHardwareBuffer createGPUBuffer ret = %d", ret);
+			if (ERROR_OK != ret)
+				break;
+		}
+
+		glGenFramebuffers(1, &FBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		DrawHelper::CheckGLError("glBindFramebuffer");
+		// bind color texture
+		glBindTexture(targetOES, nOESTextureId);
+		DrawHelper::CheckGLError("glBindTexture");
+		// attach a texture to frame buffer object
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, targetOES, nOESTextureId, 0);
+		DrawHelper::CheckGLError("glFramebufferTexture2D");
+		glBindTexture(targetOES, GL_NONE);
+
+		// check frame buffer state
+		GLenum tmpStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (GL_FRAMEBUFFER_COMPLETE != tmpStatus)
+		{
+			LOGE("drawByHardwareBuffer glCheckFramebufferStatus tmpStatus = %d", tmpStatus);
+			ret = ERROR_GL_STATUS;
+			break;
+		}
+
+		// draw offscreen
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glViewport(0, 0, nImageWidth, nImageHeight);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		pShaderHelperFBO->use();
+		glBindVertexArray(VAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(targetColor, textureColorId);
+		pShaderHelperFBO->setInt("screenTexture", 0);
+		DrawHelper::CheckGLError("drawByHardwareBuffer");
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
+		DrawHelper::CheckGLError("drawByHardwareBuffer glDrawElements");
+		glBindTexture(targetColor, GL_NONE);
+		glBindVertexArray(GL_NONE);
+
+		ret = pBufferHelper->getGPUBufferDate(&myImageInfo);
+		OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/gpu.png");
+		LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
+		if (ERROR_OK != ret)
+			break;
+	}while (false);
 
 	// save texture for test
 	/*SRECT sRect{0, 0, nImageWidth, nImageHeight};
@@ -498,6 +519,7 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glBindVertexArray(GL_NONE);*/
 
+	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
 	glDeleteTextures(1, &textureColorId);
 	glDeleteTextures(1, &nOESTextureId);
 	glDeleteFramebuffers(1, &FBO);
@@ -507,5 +529,6 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 	/*glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);*/
 	glDeleteVertexArrays(1, &VAO);
-	return ERROR_OK;
+
+	return ret;
 }

@@ -12,6 +12,9 @@
 #include "unistd.h"
 #include "draw_utils.h"
 
+#define TEST_IMAGE_PATH_0	"/sdcard/OpenGLESTest/television.png"
+#define TEST_IMAGE_PATH_1	"/sdcard/OpenGLESTest/testlib.png"
+
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
 	LOGD("onSurfaceCreated");
@@ -95,8 +98,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 
 	if (NULL != MyProcessorHandle->lpMyImageInfo && NULL == MyProcessorHandle->lpMyImageInfo->buffer[0])
 	{
-		char IMAGE_PATH [MAX_PATH] {"/sdcard/OpenGLESTest/testlib.png"};
-		OpenImageHelper::LoadPngFromFile(IMAGE_PATH, MyProcessorHandle->lpMyImageInfo);
+		OpenImageHelper::LoadPngFromFile(TEST_IMAGE_PATH_0, MyProcessorHandle->lpMyImageInfo);
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
 	int nDrawType = 3;
