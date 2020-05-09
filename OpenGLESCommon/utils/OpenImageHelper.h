@@ -8,20 +8,9 @@
 #include "png.h"
 #include "LogAndroid.h"
 #include "MyDefineUtils.h"
+#include "MyImageInfo.h"
 
 #define CHECK_PNG_RET_BREAK(_pRet_)	if (0 == *(_pRet_)) {LOGE ("CHECK_PNG_RET_BREAK error"); *(_pRet_) = ERROR_UNKNOWN; break;}
-
-#define MY_FORMAT_RGB		0x100
-#define MY_FORMAT_RGBA		0x101
-
-typedef struct __tag_image_info_
-{
-	int width;
-	int height;
-	int format;
-	int channel[4];
-	unsigned char *buffer[4];
-}MyImageInfo, *LPMyImageInfo;
 
 class OpenImageHelper
 {

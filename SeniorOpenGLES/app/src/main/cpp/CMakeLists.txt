@@ -18,8 +18,14 @@ else ()
     set(LIB_PNG_NAME png16)
 endif ()
 
+#for STL path and libs
+set(CLANG_STL_PATH ${NDK_ROOT}/sources/cxx-stl/llvm-libc++/libs/${TARGET_ABI})
+set(CLANG_STL_LIB_NAME c++_static c++abi)
+
+add_definitions ("-DGL_GLEXT_PROTOTYPES")
+add_definitions ("-DEGL_EGLEXT_PROTOTYPES")
+
 include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/common
@@ -33,6 +39,7 @@ include_directories(
 
 link_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/lib/${TARGET_ABI}
+        ${CLANG_STL_PATH}
 )
 
 set(LIST_SRC_FILES native.cpp)
@@ -41,15 +48,21 @@ list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/AHardwareBufferHelper.cpp
         )
+
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
 
 add_library(${PROCESSOR_SO_NAME} SHARED ${LIST_SRC_FILES})
 
-set(LIST_TARGET_LINK ${LIB_PNG_NAME} GLESv3 log)
+set(LIST_TARGET_LINK ${LIB_PNG_NAME} EGL GLESv3 nativewindow log)
 
 if (IF_USE_STATIC_PNG_LIB EQUAL 1)
     list(APPEND LIST_TARGET_LINK z)
 endif()
+
+list(APPEND LIST_TARGET_LINK ${CLANG_STL_LIB_NAME})
 
 target_link_libraries(
         ${PROCESSOR_SO_NAME}

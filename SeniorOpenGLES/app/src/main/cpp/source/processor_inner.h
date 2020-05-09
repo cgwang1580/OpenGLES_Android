@@ -8,7 +8,7 @@
 #include "Shader_Helper.h"
 #include "processor.h"
 #include <string>
-#include <OpenImageHelper.h>
+#include <AHardwareBufferHelper.h>
 
 using namespace std;
 
@@ -36,6 +36,7 @@ typedef struct __tag_processor_handle
 	ShaderSet mShaderSetFBO;
 	ShaderSet mShaderSetFBONormal;
 	LPMyImageInfo lpMyImageInfo;
+	AHardwareBufferHelper *pHardwareBufferHelper;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

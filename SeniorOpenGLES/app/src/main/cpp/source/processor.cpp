@@ -7,7 +7,8 @@
 #include "GLES3/gl3.h"
 #include <string>
 #include <MyDefineUtils.h>
-#include "../shader/shader_content.h"
+#include <OpenImageHelper.h>
+#include "shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
 
@@ -45,6 +46,11 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	MyProcessorHandle->lpMyImageInfo = (LPMyImageInfo)malloc(sizeof(MyImageInfo));
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo);
 	memset (MyProcessorHandle->lpMyImageInfo, 0 , sizeof(MyImageInfo));
+
+	if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
+	{
+		MyProcessorHandle->pHardwareBufferHelper = new AHardwareBufferHelper();
+	}
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,7 +99,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::LoadPngFromFile(IMAGE_PATH, MyProcessorHandle->lpMyImageInfo);
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
-	int nDrawType = 2;
+	int nDrawType = 3;
 
 	switch (nDrawType)
 	{
@@ -110,7 +116,13 @@ int onDrawFrame (const PHandle pProcessorHandle)
 						  MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawFBO ret = %d", ret);
 			break;
+		case 3:
+			ret = drawByHardwareBuffer(MyProcessorHandle->mShaderSetFBO.pShaderHelper, MyProcessorHandle->mShaderSetFBONormal.pShaderHelper,
+					MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
+			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
+			break;
 		default:
+			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
 	}
 	sleep(1);
@@ -125,6 +137,13 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetFBO.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
+	if (MyProcessorHandle->pHardwareBufferHelper)
+	{
+		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
+	}
+	SafeDelete (MyProcessorHandle->pHardwareBufferHelper);
 	if (NULL != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
