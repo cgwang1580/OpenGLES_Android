@@ -9,7 +9,7 @@
 
 #define MAX_PATH	256
 
-#define SafeFree(_p_)				if (_p_) {free (_p_); _p_ = NULL;}
+#define SafeFree(_p_)				if (_p_) {free (_p_); _p_ = nullptr;}
 #define SafeDelete(_p_)				if (_p_) {delete _p_; _p_ = nullptr;}
 #define CHECK_NULL_MALLOC(_p_)		if (!_p_) {return ERROR_MEMORY;}
 #define CHECK_NULL_INPUT(_p_)		if (!_p_) {return ERROR_INPUT;}

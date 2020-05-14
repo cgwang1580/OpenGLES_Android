@@ -9,6 +9,7 @@
 #include "LogAndroid.h"
 #include "MyDefineUtils.h"
 #include "MyImageInfo.h"
+#include "MyFileHelper.h"
 
 #define CHECK_PNG_RET_BREAK(_pRet_)	if (0 == *(_pRet_)) {LOGE ("CHECK_PNG_RET_BREAK error"); *(_pRet_) = ERROR_UNKNOWN; break;}
 
@@ -76,6 +77,13 @@ public:
 				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_RGB");
 				memset(lpMyImageInfo->buffer[0], 0, lSize);
 				break;
+			case MY_FORMAT_NV12:
+			case MY_FORMAT_NV21:
+				lpMyImageInfo->buffer[0] = (unsigned char*) malloc(lSize);
+				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_RGB");
+				memset(lpMyImageInfo->buffer[0], 0, lSize);
+				lpMyImageInfo->buffer[1] = lpMyImageInfo->buffer[0] + lpMyImageInfo->channel[0] * lpMyImageInfo->height;
+				break;
 			default:
 				break;
 		}
@@ -100,6 +108,8 @@ public:
 	static int LoadPngFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
 	{
 		LOGD("LoadPngFromFile");
+		CHECK_NULL_INPUT(sPath)
+		CHECK_NULL_INPUT(lpMyImageInfo)
 		int ret = 0;
 		png_image image {0};
 		image.version = PNG_IMAGE_VERSION;
@@ -222,8 +232,84 @@ public:
 
 	static int LoadYuvFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
 	{
-		LOGD("LoadYuvFromFile");
+		LOGD("LoadYuvFromFile sPath = %s", sPath);
+		CHECK_NULL_INPUT(sPath)
+		CHECK_NULL_INPUT(lpMyImageInfo)
+		int ret = ERROR_OK;
+		do
+		{
+			std::string filePath = sPath;
+			vector<string> strTemp0 = MyFileHelper::StringSplit (filePath, '.', '.');
+			for (auto val:strTemp0)
+				LOGD("LoadYuvFromFile %s", val.c_str());
+			if (strTemp0.size() != 2)
+			{
+				LOGE("LoadYuvFromFile sPath is not supported   strTemp0");
+				ret = ERROR_INPUT;
+				break;
+			}
+			memset(lpMyImageInfo, 0, sizeof(MyImageInfo));
+			getImageFormatByExt(strTemp0[1], lpMyImageInfo->format);
+			LOGD("LoadYuvFromFile nFormat = %d", lpMyImageInfo->format);
 
+			vector<string> strTemp1 = MyFileHelper::StringSplit(strTemp0[0], 'x', 'X');
+			if (strTemp1.size() != 2)
+			{
+				LOGE("LoadYuvFromFile sPath is not supported   strTemp1");
+				ret = ERROR_INPUT;
+				break;
+			}
+			lpMyImageInfo->width = atoi(strTemp1[1].c_str());
+			lpMyImageInfo->channel[0] = lpMyImageInfo->width;
+			LOGD("LoadYuvFromFile width = %d", lpMyImageInfo->width);
+			if (MY_FORMAT_RGBA == lpMyImageInfo->format || MY_FORMAT_RGB == lpMyImageInfo->format)
+			{
+				lpMyImageInfo->channel[1] = lpMyImageInfo->width;
+				lpMyImageInfo->channel[2] = lpMyImageInfo->width;
+			}
+			
+			vector<string> strTemp2 = MyFileHelper::StringSplit(strTemp1[0], '_', '_');
+			if (0 == strTemp2.size())
+			{
+				LOGE("LoadYuvFromFile sPath is not supported   strTemp2");
+				ret = ERROR_INPUT;
+				break;
+			}
+			lpMyImageInfo->height = atoi(strTemp2[strTemp2.size()-1].c_str());
+			LOGD("LoadYuvFromFile height = %d", lpMyImageInfo->height);
+
+			long lSize = AllocMyImageInfo(lpMyImageInfo);
+			if (0 == lSize)
+			{
+				ret = ERROR_MEMORY;
+				break;
+			}
+
+			FILE *fp = nullptr;
+			fp = fopen(sPath, "rb");
+			if (fp)
+			{
+				fread(lpMyImageInfo->buffer[0], 1, lSize, fp);
+				fclose(fp);
+			}
+
+		} while (false);
+		return ERROR_OK;
+	}
+
+	static void getImageFormatByExt (const std::string sExt, int &nFormat)
+	{
+		LOGD ("getImageFormatByExt sExt = %s", sExt.c_str());
+		if ("NV12" == sExt || "nv12" == sExt)
+			nFormat = MY_FORMAT_NV12;
+		else if ("NV21" == sExt || "nv21" == sExt)
+			nFormat = MY_FORMAT_NV21;
+		else if ("RGB24" == sExt || "rgb24" == sExt)
+			nFormat = MY_FORMAT_RGB;
+		else if ("RGB32" == sExt || "rgb32" == sExt)
+			nFormat = MY_FORMAT_RGBA;
+		else
+			LOGE("getImageFormatByExt unsupported format");
 	}
 };
 

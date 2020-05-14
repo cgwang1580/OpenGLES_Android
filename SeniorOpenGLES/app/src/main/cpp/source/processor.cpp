@@ -14,12 +14,13 @@
 
 #define TEST_IMAGE_PATH_0	"/sdcard/OpenGLESTest/television.png"
 #define TEST_IMAGE_PATH_1	"/sdcard/OpenGLESTest/testlib.png"
+#define TEST_IMAGE_PATH_YUV_0	"/sdcard/OpenGLESTest/Img_test_1_640X480.nv12"
 
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
 	LOGD("onSurfaceCreated");
 
-	if (NULL == ppProcessorHandle || NULL != *ppProcessorHandle)
+	if (nullptr == ppProcessorHandle || nullptr != *ppProcessorHandle)
 	{
 		LOGE("onSurfaceCreated ppProcessorHandle is NULL");
 		return ERROR_INPUT;
@@ -42,13 +43,21 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
 
-	if (NULL != MyProcessorHandle->lpMyImageInfo)
+	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
 	}
 	MyProcessorHandle->lpMyImageInfo = (LPMyImageInfo)malloc(sizeof(MyImageInfo));
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo);
 	memset (MyProcessorHandle->lpMyImageInfo, 0 , sizeof(MyImageInfo));
+
+	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
+	{
+		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo_YUV);
+	}
+	MyProcessorHandle->lpMyImageInfo_YUV = (LPMyImageInfo)malloc(sizeof(MyImageInfo));
+	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo_YUV);
+	memset(MyProcessorHandle->lpMyImageInfo_YUV, 0, sizeof(MyImageInfo));
 
 	if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
 	{
@@ -96,11 +105,17 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (NULL != MyProcessorHandle->lpMyImageInfo && NULL == MyProcessorHandle->lpMyImageInfo->buffer[0])
+	if (nullptr != MyProcessorHandle->lpMyImageInfo && nullptr == MyProcessorHandle->lpMyImageInfo->buffer[0])
 	{
 		OpenImageHelper::LoadPngFromFile(TEST_IMAGE_PATH_0, MyProcessorHandle->lpMyImageInfo);
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
 	}
+
+	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV && nullptr == MyProcessorHandle->lpMyImageInfo_YUV->buffer[0])
+	{
+		OpenImageHelper::LoadYuvFromFile(TEST_IMAGE_PATH_YUV_0, MyProcessorHandle->lpMyImageInfo_YUV);
+	}
+
 	int nDrawType = 3;
 
 	switch (nDrawType)
@@ -146,10 +161,15 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
 	}
 	SafeDelete (MyProcessorHandle->pHardwareBufferHelper);
-	if (NULL != MyProcessorHandle->lpMyImageInfo)
+	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
 		SafeFree(MyProcessorHandle->lpMyImageInfo);
+	}
+	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
+	{
+		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo_YUV);
+		SafeFree(MyProcessorHandle->lpMyImageInfo_YUV);
 	}
 	SafeFree (MyProcessorHandle);
 

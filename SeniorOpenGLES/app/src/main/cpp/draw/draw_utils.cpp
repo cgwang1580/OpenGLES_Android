@@ -494,7 +494,9 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 		glBindTexture(targetColor, GL_NONE);
 		glBindVertexArray(GL_NONE);
 
-		ret = pBufferHelper->getGPUBufferDate(&myImageInfo);
+		START_TIME("getGPUBufferDate")
+			ret = pBufferHelper->getGPUBufferDate(&myImageInfo);
+		STOP_TIME("getGPUBufferDate")
 		OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/gpu.png");
 		LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
 		if (ERROR_OK != ret)
