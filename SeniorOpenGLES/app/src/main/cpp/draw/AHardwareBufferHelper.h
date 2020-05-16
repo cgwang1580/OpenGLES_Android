@@ -18,6 +18,12 @@
  * link EGL android GLESv3 lib
  * __ANDROID_API__ >= 26
  */
+
+typedef enum {
+	MY_AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNKNOWN = 5,
+	MY_AHARDWAREBUFFER_FORMAT_YCrCb_420_SP = 0x11
+}MY_DEFINE_HARDWAREBUFFER_FORMAT;
+
 class AHardwareBufferHelper
 {
 private:
@@ -41,7 +47,7 @@ public:
 
 	int createGPUBuffer (const int nWidth, const int nHeight, const int format, const GLuint textureId);
 	void destroyGPUBuffer ();
-	int getGPUBufferDate(LPMyImageInfo lpMyImageInfo);
+	int getGPUBufferData(LPMyImageInfo lpMyImageInfo);
 	bool getCreateState();
 };
 

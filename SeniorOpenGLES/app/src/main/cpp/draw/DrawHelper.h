@@ -31,6 +31,7 @@ public:
 			glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		glBindTexture(target, GL_NONE);
+		DrawHelper::CheckGLError("GetOneTexture");
 	}
 
 	static void CheckGLError(const char *TAG)

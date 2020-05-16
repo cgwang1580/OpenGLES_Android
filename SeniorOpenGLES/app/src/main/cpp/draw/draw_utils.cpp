@@ -289,7 +289,7 @@ int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal
 	} else {
 		LOGE("drawTexture myImageInfo.buffer is NULL");
 	}
-	OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
+	//OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
 
 	// create a texture as FBO color attachment
 	DrawHelper::GetOneTexture(targetRgb, &textureFboId);
@@ -339,15 +339,16 @@ int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal
 	glViewport(0, 0, nScreenWidth, nScreenHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 	pShaderHelperNormal->use();
-	pShaderHelperNormal->setInt("texture1", 0);
+	pShaderHelperNormal->setInt("texture1", 1);
 	DrawHelper::CheckGLError("drawFBO normal render setInt");
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textureFboId);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
 	DrawHelper::CheckGLError("drawFBO normal render glDrawElements");
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glBindVertexArray(GL_NONE);
+	glActiveTexture(GL_TEXTURE0);
 
 	glDeleteTextures(1, &textureColorId);
 	glDeleteTextures(1, &textureFboId);
@@ -452,6 +453,7 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 		auto *pBufferHelper = (AHardwareBufferHelper *)pHardwareBufferHelper;
 		if (!pBufferHelper->getCreateState())
 		{
+			nImageFormat = MY_FORMAT_NV21;
 			ret = pBufferHelper->createGPUBuffer(nImageWidth, nImageHeight, nImageFormat, nOESTextureId);
 			LOGE("drawByHardwareBuffer createGPUBuffer ret = %d", ret);
 			if (ERROR_OK != ret)
@@ -460,6 +462,8 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 
 		glGenFramebuffers(1, &FBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		GLint oriFbo = 0;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oriFbo);
 		DrawHelper::CheckGLError("glBindFramebuffer");
 		// bind color texture
 		glBindTexture(targetOES, nOESTextureId);
@@ -477,6 +481,7 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 			ret = ERROR_GL_STATUS;
 			break;
 		}
+		glBindFramebuffer(GL_FRAMEBUFFER, oriFbo);
 
 		// draw offscreen
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -493,12 +498,20 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 		DrawHelper::CheckGLError("drawByHardwareBuffer glDrawElements");
 		glBindTexture(targetColor, GL_NONE);
 		glBindVertexArray(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+		glFinish();
 
 		START_TIME("getGPUBufferDate")
-			ret = pBufferHelper->getGPUBufferDate(&myImageInfo);
+			ret = pBufferHelper->getGPUBufferData(&myImageInfo);
 		STOP_TIME("getGPUBufferDate")
-		OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/gpu.png");
 		LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
+		//OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/gpu.png");
+		if (MY_FORMAT_NV21 == myImageInfo.format || MY_FORMAT_NV12 == myImageInfo.format)
+		{
+			char sPath[MAX_PATH]{0};
+			sprintf(sPath, "/sdcard/OpenGLESTest/gpu_0_%dx%d.nv12", myImageInfo.channel[0], myImageInfo.height);
+			OpenImageHelper::SaveImageToYuv(&myImageInfo, sPath);
+		}
 		if (ERROR_OK != ret)
 			break;
 	}while (false);

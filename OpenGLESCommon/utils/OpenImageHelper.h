@@ -15,8 +15,8 @@
 
 class OpenImageHelper
 {
-public:
 
+private:
 	/**
 	 * Calculate image buffer length
 	 * @param lpMyImageInfo
@@ -39,12 +39,16 @@ public:
 			case MY_FORMAT_RGBA:
 				lSize = 4 * lpMyImageInfo->channel[0] * lpMyImageInfo->height;
 				break;
+			case MY_FORMAT_NV12:
+			case MY_FORMAT_NV21:
+				lSize = (long)(1.5 * lpMyImageInfo->channel[0] * lpMyImageInfo->height);
 			default:
 				break;
 		}
 		return lSize;
 	}
 
+public:
 	/**
 	 * Alloc MyImageInfo, buffer of image should be null
 	 * @param lpMyImageInfo
@@ -74,13 +78,13 @@ public:
 			case MY_FORMAT_RGB:
 			case MY_FORMAT_RGBA:
 				lpMyImageInfo->buffer[0] = (unsigned char *) malloc(lSize);
-				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_RGB");
+				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_RGB MY_FORMAT_RGBA");
 				memset(lpMyImageInfo->buffer[0], 0, lSize);
 				break;
 			case MY_FORMAT_NV12:
 			case MY_FORMAT_NV21:
 				lpMyImageInfo->buffer[0] = (unsigned char*) malloc(lSize);
-				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_RGB");
+				CHECK_MALLOC_BREAK(lpMyImageInfo->buffer[0], &ret, "AllocMyImageInfo MY_FORMAT_NV12 MY_FORMAT_NV21");
 				memset(lpMyImageInfo->buffer[0], 0, lSize);
 				lpMyImageInfo->buffer[1] = lpMyImageInfo->buffer[0] + lpMyImageInfo->channel[0] * lpMyImageInfo->height;
 				break;
@@ -141,10 +145,11 @@ public:
 				lpMyImageInfo->format = MY_FORMAT_RGB;
 			}
 			lpMyImageInfo->channel[0] = lpMyImageInfo->width;
-			ret = AllocMyImageInfo(lpMyImageInfo);
-			if (ERROR_OK != ret)
+			long lSize = 0;
+			lSize = AllocMyImageInfo(lpMyImageInfo);
+			if (0 == lSize)
 			{
-				LOGE("LoadPngFromFile AllocMyImageInfo ret = %d", ret);
+				LOGE("LoadPngFromFile AllocMyImageInfo error");
 				break;
 			}
 			memcpy(lpMyImageInfo->buffer[0], buffer, PNG_IMAGE_SIZE(image));
@@ -153,6 +158,30 @@ public:
 
 		png_image_free(&image);
 		SafeFree(buffer);
+		return ret;
+	}
+
+	static int SaveImageToYuv (const LPMyImageInfo lpMyImageInfo, const char* sPath)
+	{
+		CAL_TIME_COST("SaveImage")
+		CHECK_NULL_INPUT(lpMyImageInfo)
+		CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
+		CHECK_NULL_INPUT(sPath)
+		LOGD("SaveImageToYuv sPath = %s", sPath);
+
+		int ret = ERROR_OK;
+		long lSize = CalMyImageBufferLength(lpMyImageInfo);
+		FILE *fp = nullptr;
+		fp = fopen(sPath, "wb");
+		if (fp)
+		{
+			fwrite(lpMyImageInfo->buffer[0], 1, lSize, fp);
+			fclose(fp);
+		}
+		else
+		{
+			ret = ERROR_FILE_COMMON;
+		}
 		return ret;
 	}
 
@@ -249,8 +278,8 @@ public:
 				break;
 			}
 			memset(lpMyImageInfo, 0, sizeof(MyImageInfo));
-			getImageFormatByExt(strTemp0[1], lpMyImageInfo->format);
-			LOGD("LoadYuvFromFile nFormat = %d", lpMyImageInfo->format);
+			GetImageFormatByExt(strTemp0[1], lpMyImageInfo->format);
+			LOGD("LoadYuvFromFile GetImageFormatByExt nFormat = %d", lpMyImageInfo->format);
 
 			vector<string> strTemp1 = MyFileHelper::StringSplit(strTemp0[0], 'x', 'X');
 			if (strTemp1.size() != 2)
@@ -259,14 +288,8 @@ public:
 				ret = ERROR_INPUT;
 				break;
 			}
-			lpMyImageInfo->width = atoi(strTemp1[1].c_str());
-			lpMyImageInfo->channel[0] = lpMyImageInfo->width;
-			LOGD("LoadYuvFromFile width = %d", lpMyImageInfo->width);
-			if (MY_FORMAT_RGBA == lpMyImageInfo->format || MY_FORMAT_RGB == lpMyImageInfo->format)
-			{
-				lpMyImageInfo->channel[1] = lpMyImageInfo->width;
-				lpMyImageInfo->channel[2] = lpMyImageInfo->width;
-			}
+			lpMyImageInfo->height = atoi(strTemp1[1].c_str());
+			LOGD("LoadYuvFromFile height = %d", lpMyImageInfo->height);
 			
 			vector<string> strTemp2 = MyFileHelper::StringSplit(strTemp1[0], '_', '_');
 			if (0 == strTemp2.size())
@@ -275,8 +298,15 @@ public:
 				ret = ERROR_INPUT;
 				break;
 			}
-			lpMyImageInfo->height = atoi(strTemp2[strTemp2.size()-1].c_str());
-			LOGD("LoadYuvFromFile height = %d", lpMyImageInfo->height);
+			lpMyImageInfo->width = atoi(strTemp2[strTemp2.size()-1].c_str());
+			lpMyImageInfo->channel[0] = lpMyImageInfo->width;
+			LOGD("LoadYuvFromFile width = %d", lpMyImageInfo->width);
+			if (MY_FORMAT_RGBA == lpMyImageInfo->format || MY_FORMAT_RGB == lpMyImageInfo->format)
+			{
+				lpMyImageInfo->channel[1] = lpMyImageInfo->width;
+				lpMyImageInfo->channel[2] = lpMyImageInfo->width;
+			}
+
 
 			long lSize = AllocMyImageInfo(lpMyImageInfo);
 			if (0 == lSize)
@@ -292,14 +322,23 @@ public:
 				fread(lpMyImageInfo->buffer[0], 1, lSize, fp);
 				fclose(fp);
 			}
+			else
+			{
+				ret = ERROR_FILE_NOT_EXIT;
+				break;
+			}
 
 		} while (false);
-		return ERROR_OK;
+
+		if (ERROR_OK != ret)
+			FreeMyImageInfo(lpMyImageInfo);
+
+		return ret;
 	}
 
-	static void getImageFormatByExt (const std::string sExt, int &nFormat)
+	static void GetImageFormatByExt (const std::string sExt, int &nFormat)
 	{
-		LOGD ("getImageFormatByExt sExt = %s", sExt.c_str());
+		LOGD ("GetImageFormatByExt sExt = %s", sExt.c_str());
 		if ("NV12" == sExt || "nv12" == sExt)
 			nFormat = MY_FORMAT_NV12;
 		else if ("NV21" == sExt || "nv21" == sExt)
@@ -309,8 +348,9 @@ public:
 		else if ("RGB32" == sExt || "rgb32" == sExt)
 			nFormat = MY_FORMAT_RGBA;
 		else
-			LOGE("getImageFormatByExt unsupported format");
+			LOGE("GetImageFormatByExt unsupported format");
 	}
+
 };
 
 #endif //HELLOTRIANGLE_OPENIMAGEHELPER_H

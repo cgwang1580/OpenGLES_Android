@@ -69,11 +69,11 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 	DrawHelper::CheckEGLError("glBindTexture");
 	glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, (GLeglImageOES)pEGLImageKHR);
 	DrawHelper::CheckEGLError("glEGLImageTargetTexture2DOES");
-	glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	/*glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	DrawHelper::CheckEGLError("glTexParameteri");
 	glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	DrawHelper::CheckEGLError("glTexParameteri");
-	glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
+	DrawHelper::CheckEGLError("glTexParameteri");*/
+	glBindTexture(GL_TEXTURE_EXTERNAL_OES, GL_NONE);
 
 	setCreateState(true);
 
@@ -91,7 +91,7 @@ void AHardwareBufferHelper::destroyGPUBuffer ()
 	setCreateState(false);
 }
 
-int AHardwareBufferHelper::getGPUBufferDate(LPMyImageInfo lpMyImageInfo)
+int AHardwareBufferHelper::getGPUBufferData(LPMyImageInfo lpMyImageInfo)
 {
 	LOGD("getGPUBufferDate");
 	CHECK_NULL_INPUT(lpMyImageInfo)
@@ -100,7 +100,7 @@ int AHardwareBufferHelper::getGPUBufferDate(LPMyImageInfo lpMyImageInfo)
 	unsigned char *pSrcPlane = nullptr;
 	int ret = AHardwareBuffer_lock (pAHardwareBuffer, USAGE, fence, NULL, (void **)&pSrcPlane);
 	LOGD("getGPUBufferDate AHardwareBuffer_lock ret = %d", ret);
-	if (ERROR_OK != ret)
+	if (ERROR_OK != ret || nullptr == pSrcPlane)
 	{
 		LOGE("getGPUBufferDate AHardwareBuffer_lock error");
 		return ret;
@@ -144,14 +144,14 @@ void AHardwareBufferHelper::convertImageFormat2Hardware(const int srcFormat, int
 	switch (srcFormat)
 	{
 		case MY_FORMAT_RGBA:
-			dstFormat = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+			dstFormat = MY_AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNKNOWN;
 			break;
 		case MY_FORMAT_RGB:
 			dstFormat = AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM;
 			break;
 		case MY_FORMAT_NV21:
 		case MY_FORMAT_NV12:
-			dstFormat = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+			dstFormat = MY_AHARDWAREBUFFER_FORMAT_YCrCb_420_SP;
 			break;
 		default:
 			break;
@@ -164,13 +164,13 @@ void AHardwareBufferHelper::convertHardwareFormat2Image(const int srcFormat, int
 	LOGD("convertHardwareFormat2Image srcFormat = %d", srcFormat);
 	switch (srcFormat)
 	{
-		case AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM:
+		case MY_AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNKNOWN:
 			dstFormat = MY_FORMAT_RGBA;
 			break;
 		case AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM:
 			dstFormat = MY_FORMAT_RGB;
 			break;
-		case AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420:
+		case MY_AHARDWAREBUFFER_FORMAT_YCrCb_420_SP:
 			dstFormat = MY_FORMAT_NV21;
 			break;
 		default:

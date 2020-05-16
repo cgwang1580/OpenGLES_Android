@@ -114,6 +114,11 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV && nullptr == MyProcessorHandle->lpMyImageInfo_YUV->buffer[0])
 	{
 		OpenImageHelper::LoadYuvFromFile(TEST_IMAGE_PATH_YUV_0, MyProcessorHandle->lpMyImageInfo_YUV);
+		/*char sPath[MAX_PATH]{0};
+		sprintf(sPath, "/sdcard/OpenGLESTest/Save_0_%dx%d.nv12", MyProcessorHandle->lpMyImageInfo_YUV->channel[0],
+				MyProcessorHandle->lpMyImageInfo_YUV->height);
+		OpenImageHelper::SaveImageToYuv(MyProcessorHandle->lpMyImageInfo_YUV, sPath);*/
+
 	}
 
 	int nDrawType = 3;
@@ -156,7 +161,7 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
 	SafeDelete (MyProcessorHandle->mShaderSetFBO.pShaderHelper);
 	SafeDelete (MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
-	if (MyProcessorHandle->pHardwareBufferHelper)
+	if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
 	{
 		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
 	}

@@ -12,7 +12,9 @@ typedef enum _enum_error_code_
 	ERROR_INPUT,
 	ERROR_MEMORY,
 	ERROR_IMAGE,
-	ERROR_GL_STATUS
+	ERROR_GL_STATUS,
+	ERROR_FILE_NOT_EXIT,
+	ERROR_FILE_COMMON
 }ERROR_CODE;
 
 typedef struct _tag_rect_
