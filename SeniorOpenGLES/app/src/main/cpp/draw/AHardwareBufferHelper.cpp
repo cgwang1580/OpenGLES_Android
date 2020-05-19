@@ -8,16 +8,36 @@
 #include "LogAndroid.h"
 #include "cstring"
 
+const GLfloat vVertices[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+};
+
+const GLfloat vTexCoors[] = {
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+};
+
+const GLuint indices[] = { 0, 1, 2, 1, 3, 2 };
+
 AHardwareBufferHelper::AHardwareBufferHelper() :
 		pEGLDisplay(nullptr),
 		pEGLContext(nullptr),
 		pEGLImageKHR(nullptr),
 		pAHardwareBuffer(nullptr),
 		bCreated(false),
-		mOESTextureId(0)
+		mTextureColorId(GL_NONE),
+		mOESTextureId(GL_NONE),
+		mDstFBO (GL_NONE),
+		m_VAO(GL_NONE)
 {
 	LOGD("GraphicBufferHelper");
 	USAGE = (AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN|AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN);
+	memset(m_VBO, 0, sizeof(m_VBO));
 }
 
 AHardwareBufferHelper::~AHardwareBufferHelper()
@@ -26,7 +46,7 @@ AHardwareBufferHelper::~AHardwareBufferHelper()
 	setCreateState(false);
 }
 
-int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight, const int format, const GLuint textureId)
+int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight, const int format)
 {
 	LOGD("createGPUBuffer");
 	int ret = ERROR_OK;
@@ -43,6 +63,9 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 	aBufferDesc.stride = (uint32_t)aBufferDesc.width;
 	aBufferDesc.rfu0 = 0;
 	aBufferDesc.rfu1 = 0;
+
+	mWidth = aBufferDesc.width;
+	mHeight = aBufferDesc.height;
 
 	ret = AHardwareBuffer_allocate (&aBufferDesc, &pAHardwareBuffer);
 	LOGD("AHardwareBuffer_allocate ret = %d", ret);
@@ -65,15 +88,10 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 		return ERROR_GL_STATUS;
 	}
 
-	glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
-	DrawHelper::CheckEGLError("glBindTexture");
-	glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, (GLeglImageOES)pEGLImageKHR);
-	DrawHelper::CheckEGLError("glEGLImageTargetTexture2DOES");
-	/*glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	DrawHelper::CheckEGLError("glTexParameteri");
-	glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	DrawHelper::CheckEGLError("glTexParameteri");*/
-	glBindTexture(GL_TEXTURE_EXTERNAL_OES, GL_NONE);
+	initGLBuffer();
+	initDstOesTextureId();
+	connectDstTextureIdToImageBuffer();
+	initDstOesFbo();
 
 	setCreateState(true);
 
@@ -83,11 +101,27 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 void AHardwareBufferHelper::destroyGPUBuffer ()
 {
 	LOGD("destroyGPUBuffer");
-	AHardwareBuffer_release(pAHardwareBuffer);
-	pAHardwareBuffer = nullptr;
-	eglDestroyImageKHR(pEGLDisplay, pEGLImageKHR);
+	if (pAHardwareBuffer)
+	{
+		AHardwareBuffer_release(pAHardwareBuffer);
+		pAHardwareBuffer = nullptr;
+	}
+	if (pEGLImageKHR)
+	{
+		eglDestroyImageKHR(pEGLDisplay, pEGLImageKHR);
+		pEGLImageKHR = nullptr;
+	}
 	pEGLDisplay = nullptr;
-	pEGLImageKHR = nullptr;
+	if (mTextureColorId)
+		glDeleteTextures(1, &mTextureColorId);
+	if(mOESTextureId)
+		glDeleteTextures(1, &mOESTextureId);
+	if (mDstFBO)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, mDstFBO);
+		glDeleteFramebuffers(1, &mDstFBO);
+	}
+	unInitGLBuffer();
 	setCreateState(false);
 }
 
@@ -133,9 +167,173 @@ int AHardwareBufferHelper::getGPUBufferData(LPMyImageInfo lpMyImageInfo)
 	return ERROR_OK;
 }
 
+int AHardwareBufferHelper::initGLBuffer ()
+{
+	LOGD("initGLBuffer");
+
+	glGenBuffers(sizeof(m_VBO)/sizeof(GLuint), m_VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexCoors), vTexCoors, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_VBO[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &m_VAO);
+	glBindVertexArray(m_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO[1]);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+
+	/// !!! need call glBindBuffer to bind GL_ELEMENT_ARRAY_BUFFER again
+	/// before glBindVertexArray GL_NONE !!!///
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_VBO[2]);
+	glBindVertexArray(GL_NONE);
+
+	return ERROR_OK;
+}
+
+void AHardwareBufferHelper::unInitGLBuffer ()
+{
+	LOGD("unInitGLBuffer");
+	if (m_VAO)
+	{
+		glDeleteBuffers(1, &m_VAO);
+	}
+	for (auto val:m_VBO)
+	{
+		if (val)
+			glDeleteBuffers(1, &val);
+	}
+}
+
+int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo)
+{
+	LOGD("onDrawFrame colorTextureId = %d", colorTextureId);
+	mTextureColorId = colorTextureId;
+
+	GLint oriFbo = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oriFbo);
+	DrawHelper::CheckGLError("onDrawFrame glGetIntegerv");
+	GLint viewPorts[4] = {0};
+	glGetIntegerv(GL_VIEWPORT, viewPorts);
+	DrawHelper::CheckGLError("onDrawFrame glGetIntegerv");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mDstFBO);
+	DrawHelper::CheckGLError("onDrawFrame glBindFramebuffer");
+	glViewport(0, 0, mWidth, mHeight);
+	DrawHelper::CheckGLError("onDrawFrame glViewport");
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	DrawHelper::CheckGLError("onDrawFrame glClearColor");
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	DrawHelper::CheckGLError("onDrawFrame glClear");
+
+	glBindTexture(GL_TEXTURE_2D, mTextureColorId);
+	DrawHelper::CheckGLError("onDrawFrame glBindTexture");
+
+	glBindVertexArray(m_VAO);
+	DrawHelper::CheckGLError("onDrawFrame glBindVertexArray");
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
+	DrawHelper::CheckGLError("onDrawFrame glDrawElements");
+	glBindVertexArray(GL_NONE);
+	DrawHelper::CheckGLError("onDrawFrame glBindVertexArray");
+
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	DrawHelper::CheckGLError("onDrawFrame glBindTexture");
+	glBindFramebuffer(GL_FRAMEBUFFER, oriFbo);
+	DrawHelper::CheckGLError("onDrawFrame glBindFramebuffer");
+	glViewport(viewPorts[0], viewPorts[1], viewPorts[2], viewPorts[3]);
+	DrawHelper::CheckGLError("onDrawFrame glViewport");
+
+	int ret = ERROR_OK;
+	START_TIME("getGPUBufferDate")
+		ret = getGPUBufferData(lpMyImageInfo);
+	STOP_TIME("getGPUBufferDate")
+	LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
+	return ret;
+}
+
 bool AHardwareBufferHelper::getCreateState()
 {
 	return bCreated;
+}
+
+void AHardwareBufferHelper::initDstOesTextureId ()
+{
+	LOGD("initDstOesTextureId");
+	if (GL_NONE != mOESTextureId)
+	{
+		return;
+	}
+	const GLenum targetOES = GL_TEXTURE_EXTERNAL_OES;
+	DrawHelper::GetOneTexture(targetOES, &mOESTextureId);
+	DrawHelper::CheckGLError("initDstOesTextureId GetOneTexture");
+}
+
+void AHardwareBufferHelper::initDstOesFbo()
+{
+	LOGD("initDstOesFbo");
+	const GLenum TargetOES = GL_TEXTURE_EXTERNAL_OES;
+
+	glBindTexture(TargetOES, mOESTextureId);
+	DrawHelper::CheckGLError("initDstOesFbo GetOneTexture");
+
+	glGenFramebuffers(1, &mDstFBO);
+	DrawHelper::CheckGLError("initDstOesFbo glGenFramebuffers");
+
+
+	const GLenum TargetFrameBuffer = GL_FRAMEBUFFER;
+	glBindFramebuffer(TargetFrameBuffer, mDstFBO);
+	DrawHelper::CheckGLError("initDstOesFbo glBindFramebuffer");
+
+	GLint oriFbo = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oriFbo);
+	DrawHelper::CheckGLError("initDstOesFbo glGetIntegerv");
+	glBindFramebuffer(TargetFrameBuffer, mDstFBO);
+	DrawHelper::CheckGLError("initDstOesFbo glBindFramebuffer");
+	glFramebufferTexture2D(TargetFrameBuffer, GL_COLOR_ATTACHMENT0, TargetOES, mOESTextureId, 0);
+	DrawHelper::CheckGLError("initDstOesFbo glFramebufferTexture2D");
+
+	// check frame buffer state
+	GLenum tmpStatus = glCheckFramebufferStatus(TargetFrameBuffer);
+	if (GL_FRAMEBUFFER_COMPLETE != tmpStatus)
+	{
+		LOGE("initDstOesFbo glCheckFramebufferStatus tmpStatus = %d", tmpStatus);
+		return;
+	}
+	DrawHelper::CheckGLError("initDstOesFbo glCheckFramebufferStatus");
+	glBindFramebuffer(GL_FRAMEBUFFER, oriFbo);
+
+	glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+	DrawHelper::CheckGLError("initDstOesFbo glClearColor");
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	DrawHelper::CheckGLError("initDstOesFbo glClear");
+
+	glBindTexture(TargetOES, GL_NONE);
+	DrawHelper::CheckGLError("initDstOesFbo glBindTexture");
+	glBindFramebuffer(TargetFrameBuffer, oriFbo);
+	DrawHelper::CheckGLError("initDstOesFbo glBindFramebuffer");
+}
+
+void AHardwareBufferHelper::connectDstTextureIdToImageBuffer()
+{
+	LOGD("connectDstTextureIdToImageBuffer");
+	const GLenum TargetOES = GL_TEXTURE_EXTERNAL_OES;
+	glBindTexture(TargetOES, mOESTextureId);
+	DrawHelper::CheckEGLError("connectDstTextureIdToImageBuffer glBindTexture");
+	glEGLImageTargetTexture2DOES(TargetOES, (GLeglImageOES)pEGLImageKHR);
+	DrawHelper::CheckEGLError("connectDstTextureIdToImageBuffer glEGLImageTargetTexture2DOES");
+	glBindTexture(TargetOES, GL_NONE);
+	DrawHelper::CheckEGLError("connectDstTextureIdToImageBuffer glBindTexture");
 }
 
 void AHardwareBufferHelper::convertImageFormat2Hardware(const int srcFormat, int &dstFormat)

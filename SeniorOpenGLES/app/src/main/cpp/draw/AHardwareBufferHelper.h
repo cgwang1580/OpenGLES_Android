@@ -34,21 +34,33 @@ private:
 	bool bCreated;
 	uint64_t USAGE;
 
-	GLuint mOESTextureId;
+	GLuint m_VAO;
+	GLuint m_VBO[3];
 
 	void convertImageFormat2Hardware(const int srcFormat, int &dstFormat);
 	void convertHardwareFormat2Image(const int srcFormat, int &dstFormat);
 	void setCreateState (const bool state);
 	void setHardwareContext();
+	void initDstOesTextureId();
+	void initDstOesFbo();
+	void connectDstTextureIdToImageBuffer();
+	int getGPUBufferData(LPMyImageInfo lpMyImageInfo);
+	int initGLBuffer ();
+	void unInitGLBuffer ();
 
 public:
 	AHardwareBufferHelper ();
 	~AHardwareBufferHelper();
-
-	int createGPUBuffer (const int nWidth, const int nHeight, const int format, const GLuint textureId);
+	int createGPUBuffer (const int nWidth, const int nHeight, const int format);
 	void destroyGPUBuffer ();
-	int getGPUBufferData(LPMyImageInfo lpMyImageInfo);
+	int onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo);
 	bool getCreateState();
+
+	GLuint mTextureColorId;
+	GLuint mOESTextureId;
+	GLuint mDstFBO;
+	int mWidth;
+	int mHeight;
 };
 
 #endif //SENIOROPENGLES_AHARDWAREBUFFERHELPER_H

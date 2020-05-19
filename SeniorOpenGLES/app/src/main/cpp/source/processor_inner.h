@@ -35,6 +35,8 @@ typedef struct __tag_processor_handle
 	ShaderSet mShaderSetTexture;
 	ShaderSet mShaderSetFBO;
 	ShaderSet mShaderSetFBONormal;
+	ShaderSet mShaderSetHardware;
+	ShaderSet mShaderSetHardwareNormal;
 	LPMyImageInfo lpMyImageInfo;
 	LPMyImageInfo lpMyImageInfo_YUV;
 	AHardwareBufferHelper *pHardwareBufferHelper;

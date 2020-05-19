@@ -16,7 +16,7 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 
 int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo);
 
-int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal,
-		const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
+int drawByHardwareBuffer (Shader_Helper *pShaderHelperHardware, Shader_Helper *pShaderHelperHardwareNormal,
+						  const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
 
 #endif //HELLOTRIANGLE_DRAW_UTILS_H

@@ -362,15 +362,15 @@ int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal
 	return ERROR_OK;
 }
 
-int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal,
-		const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
+int drawByHardwareBuffer (Shader_Helper *pShaderHelperHardware, Shader_Helper *pShaderHelperHardwareNormal,
+						  const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
 {
 	LOGD ("drawByHardwareBuffer");
 
 	int ret = ERROR_OK;
 
-	CHECK_NULL_INPUT(pShaderHelperFBO)
-	CHECK_NULL_INPUT(pShaderHelperNormal)
+	CHECK_NULL_INPUT(pShaderHelperHardware)
+	//CHECK_NULL_INPUT(pShaderHelperHardwareNormal)
 	CHECK_NULL_INPUT(pHardwareBufferHelper)
 	CHECK_NULL_INPUT(lpMyImageInfo)
 	CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
@@ -381,130 +381,58 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 	int nScreenWidth = viewPort[2];
 	int nScreenHeight = viewPort[3];
 
-	GLfloat vVertices[] = {
-			-1.0f, -1.0f, 0.0f,
-			1.0f, -1.0f, 0.0f,
-			-1.0f,  1.0f, 0.0f,
-			1.0f,  1.0f, 0.0f,
-	};
-	GLfloat vTexCoors[] = {
-			0.0f, 1.0f,
-			1.0f, 1.0f,
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-	};
-	GLuint indices[] = { 0, 1, 2, 1, 3, 2 };
-
-	GLuint VBO[3];
-	glGenBuffers(3, VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexCoors), vTexCoors, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void*)0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	/// !!! need call glBindBuffer to bind GL_ELEMENT_ARRAY_BUFFER again
-	/// before glBindVertexArray GL_NONE !!!///
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO[2]);
-	glBindVertexArray(GL_NONE);
-
 	int nImageWidth = lpMyImageInfo->width;
 	int nImageHeight = lpMyImageInfo->height;
 	int nImageFormat = lpMyImageInfo->format;
 
 	GLuint textureColorId = GL_NONE;
-	GLuint nOESTextureId = GL_NONE;
-	GLuint FBO = GL_NONE;
 	MyImageInfo myImageInfo{0};
 	do
 	{
+		const GLenum TargetColor = GL_TEXTURE_2D;
+		const GLenum targetOES = GL_TEXTURE_EXTERNAL_OES;
+
 		// create a color texture as src
-		const GLenum targetColor = GL_TEXTURE_2D;
-		DrawHelper::GetOneTexture(targetColor, &textureColorId);
-		glBindTexture(targetColor, textureColorId);
+		DrawHelper::GetOneTexture(TargetColor, &textureColorId);
+		DrawHelper::CheckGLError("GetOneTexture");
+		glActiveTexture(GL_TEXTURE0);
+		DrawHelper::CheckGLError("glActiveTexture");
+		glBindTexture(TargetColor, textureColorId);
+		DrawHelper::CheckGLError("glBindTexture");
 		if (NULL != lpMyImageInfo->buffer[0]) {
-			glTexImage2D (targetColor, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
-			glGenerateMipmap (targetColor);
+			glTexImage2D (TargetColor, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
+			DrawHelper::CheckGLError("glTexImage2D");
+			glGenerateMipmap (TargetColor);
+			DrawHelper::CheckGLError("glGenerateMipmap");
 		} else {
 			LOGE("drawByHardwareBuffer myImageInfo.buffer is NULL");
 		}
-		glBindTexture(targetColor, GL_NONE);
+		glBindTexture(TargetColor, GL_NONE);
 		DrawHelper::CheckGLError("glBindTexture");
-		OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
 
-		// get OES texture
-		const GLenum targetOES = GL_TEXTURE_EXTERNAL_OES;
-		DrawHelper::GetOneTexture(targetOES, &nOESTextureId);
-		DrawHelper::CheckGLError("GetOneTexture targetOES");
 		auto *pBufferHelper = (AHardwareBufferHelper *)pHardwareBufferHelper;
 		if (!pBufferHelper->getCreateState())
 		{
 			nImageFormat = MY_FORMAT_NV21;
-			ret = pBufferHelper->createGPUBuffer(nImageWidth, nImageHeight, nImageFormat, nOESTextureId);
+			ret = pBufferHelper->createGPUBuffer(nImageWidth, nImageHeight, nImageFormat);
 			LOGE("drawByHardwareBuffer createGPUBuffer ret = %d", ret);
 			if (ERROR_OK != ret)
 				break;
 		}
 
-		glGenFramebuffers(1, &FBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-		GLint oriFbo = 0;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oriFbo);
-		DrawHelper::CheckGLError("glBindFramebuffer");
-		// bind color texture
-		glBindTexture(targetOES, nOESTextureId);
-		DrawHelper::CheckGLError("glBindTexture");
-		// attach a texture to frame buffer object
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, targetOES, nOESTextureId, 0);
-		DrawHelper::CheckGLError("glFramebufferTexture2D");
-		glBindTexture(targetOES, GL_NONE);
-
-		// check frame buffer state
-		GLenum tmpStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		if (GL_FRAMEBUFFER_COMPLETE != tmpStatus)
-		{
-			LOGE("drawByHardwareBuffer glCheckFramebufferStatus tmpStatus = %d", tmpStatus);
-			ret = ERROR_GL_STATUS;
-			break;
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, oriFbo);
-
-		// draw offscreen
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glViewport(0, 0, nImageWidth, nImageHeight);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-		pShaderHelperFBO->use();
-		glBindVertexArray(VAO);
+		pShaderHelperHardware->use();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(targetColor, textureColorId);
-		pShaderHelperFBO->setInt("screenTexture", 0);
-		DrawHelper::CheckGLError("drawByHardwareBuffer");
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
-		DrawHelper::CheckGLError("drawByHardwareBuffer glDrawElements");
-		glBindTexture(targetColor, GL_NONE);
+		glBindTexture(TargetColor, textureColorId);
+		pShaderHelperHardware->setInt("screenTexture", 0);
+		DrawHelper::CheckGLError("setInt");
+		pBufferHelper->onDrawFrame(textureColorId, &myImageInfo);
+		glBindTexture(TargetColor, GL_NONE);
 		glBindVertexArray(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
-		glFinish();
 
-		START_TIME("getGPUBufferDate")
-			ret = pBufferHelper->getGPUBufferData(&myImageInfo);
-		STOP_TIME("getGPUBufferDate")
-		LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
+		// save texture for test
+		/*SRECT sRect{0, 0, nImageWidth, nImageHeight};
+		DrawHelper::SaveRenderImage (sRect, GL_RGBA, "/sdcard/OpenGLESTest/SaveRender.png");*/
+
 		//OpenImageHelper::SaveImageToPng(&myImageInfo, "/sdcard/OpenGLESTest/gpu.png");
 		if (MY_FORMAT_NV21 == myImageInfo.format || MY_FORMAT_NV12 == myImageInfo.format)
 		{
@@ -514,36 +442,29 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShade
 		}
 		if (ERROR_OK != ret)
 			break;
+
+		// normal render
+		/*glViewport(0, 0, nScreenWidth, nScreenHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+		pShaderHelperHardwareNormal->use();
+		pShaderHelperHardwareNormal->setInt("texture1", 0);
+		DrawHelper::CheckGLError("drawFBO normal render setInt");
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(targetOES, nOESTextureId);
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
+		DrawHelper::CheckGLError("drawFBO normal render glDrawElements");
+		glBindTexture(targetOES, GL_NONE);
+		glBindVertexArray(GL_NONE);*/
+
 	}while (false);
 
 	// save texture for test
 	/*SRECT sRect{0, 0, nImageWidth, nImageHeight};
 	DrawHelper::SaveRenderImage (sRect, GL_RGBA, "/sdcard/OpenGLESTest/SaveRender.png");*/
 
-	// normal render
-	/*glViewport(0, 0, nScreenWidth, nScreenHeight);
-	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
-	pShaderHelperNormal->use();
-	pShaderHelperNormal->setInt("texture1", 0);
-	DrawHelper::CheckGLError("drawFBO normal render setInt");
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureFboId);
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
-	DrawHelper::CheckGLError("drawFBO normal render glDrawElements");
-	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	glBindVertexArray(GL_NONE);*/
-
 	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
 	glDeleteTextures(1, &textureColorId);
-	glDeleteTextures(1, &nOESTextureId);
-	glDeleteFramebuffers(1, &FBO);
-	glDeleteBuffers(1, &VBO[0]);
-	glDeleteBuffers(1, &VBO[1]);
-	glDeleteBuffers(1, &VBO[2]);
-	/*glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);*/
-	glDeleteVertexArrays(1, &VAO);
 
 	return ret;
 }

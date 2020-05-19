@@ -43,6 +43,12 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
 
+	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardware, hardware_vertex_shader, hardware_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
+
+	/*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*/
+
 	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);
@@ -139,7 +145,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			LOGD("onDrawFrame drawFBO ret = %d", ret);
 			break;
 		case 3:
-			ret = drawByHardwareBuffer(MyProcessorHandle->mShaderSetFBO.pShaderHelper, MyProcessorHandle->mShaderSetFBONormal.pShaderHelper,
+			ret = drawByHardwareBuffer(MyProcessorHandle->mShaderSetHardware.pShaderHelper, nullptr,
 					MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
 			break;
@@ -157,10 +163,12 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
-	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetFBO.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
+	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
+	SafeDelete(MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
+	SafeDelete(MyProcessorHandle->mShaderSetHardware.pShaderHelper);
+	//SafeDelete(MyProcessorHandle->mShaderSetHardwareNormal.pShaderHelper);
 	if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
 	{
 		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
