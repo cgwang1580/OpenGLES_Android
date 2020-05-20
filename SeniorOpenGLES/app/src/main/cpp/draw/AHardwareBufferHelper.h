@@ -11,6 +11,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3ext.h>
 #include <android/hardware_buffer.h>
+#include <Shader_Helper.h>
 #include "MyImageInfo.h"
 
 /**
@@ -37,6 +38,15 @@ private:
 	GLuint m_VAO;
 	GLuint m_VBO[3];
 
+	Shader_Helper *m_pShaderHelper;
+
+	GLuint mTextureColorId;
+	GLuint mOESTextureId;
+	GLuint mDstFBO;
+	int mWidth;
+	int mHeight;
+	int mRenderNum;
+
 	void convertImageFormat2Hardware(const int srcFormat, int &dstFormat);
 	void convertHardwareFormat2Image(const int srcFormat, int &dstFormat);
 	void setCreateState (const bool state);
@@ -55,12 +65,7 @@ public:
 	void destroyGPUBuffer ();
 	int onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo);
 	bool getCreateState();
-
-	GLuint mTextureColorId;
-	GLuint mOESTextureId;
-	GLuint mDstFBO;
-	int mWidth;
-	int mHeight;
+	int getRenderNum ();
 };
 
 #endif //SENIOROPENGLES_AHARDWAREBUFFERHELPER_H

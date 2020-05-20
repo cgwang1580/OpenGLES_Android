@@ -43,9 +43,6 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
 
-	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardware, hardware_vertex_shader, hardware_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
-
 	/*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*/
 
@@ -145,9 +142,11 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			LOGD("onDrawFrame drawFBO ret = %d", ret);
 			break;
 		case 3:
-			ret = drawByHardwareBuffer(MyProcessorHandle->mShaderSetHardware.pShaderHelper, nullptr,
-					MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
+			ret = drawByHardwareBuffer(nullptr, MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
+			break;
+		case 4:
+			ret = drawByHardwareBuffer2 (MyProcessorHandle->lpMyImageInfo);
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
@@ -167,7 +166,6 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
-	SafeDelete(MyProcessorHandle->mShaderSetHardware.pShaderHelper);
 	//SafeDelete(MyProcessorHandle->mShaderSetHardwareNormal.pShaderHelper);
 	if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
 	{

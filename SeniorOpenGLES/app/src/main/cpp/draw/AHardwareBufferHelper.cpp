@@ -24,6 +24,37 @@ const GLfloat vTexCoors[] = {
 
 const GLuint indices[] = { 0, 1, 2, 1, 3, 2 };
 
+static const string hardware_vertex_shader = "#version 300 es\n"
+											 "\n"
+											 "layout (location = 0) in vec3 aPos;\n"
+											 "layout (location = 1) in vec2 aTexCoords;\n"
+											 "\n"
+											 "out vec2 TexCoords;\n"
+											 "\n"
+											 "void main()\n"
+											 "{\n"
+											 "    gl_Position = vec4(aPos, 1.0);\n"
+											 "    TexCoords = aTexCoords;\n"
+											 "}";
+
+static const string hardware_fragment_shader = "#version 300 es\n"
+											   "#extension GL_EXT_YUV_target: require\n"
+											   "\n"
+											   "precision mediump float;\n"
+											   "in vec2 TexCoords;\n"
+											   "layout(yuv) out vec4 FragColor;\n"
+											   "\n"
+											   "uniform sampler2D screenTexture;\n"
+											   "\n"
+											   "void main()\n"
+											   "{\n"
+											   "	   yuvCscStandardEXT conv_standard = itu_601_full_range;\n"
+											   "    vec4 rgbaColor = texture(screenTexture, TexCoords);\n"
+											   "	   vec3 rgbColor = vec3(rgbaColor.r, rgbaColor.g, rgbaColor.b);\n"
+											   "    vec3 yuv = rgb_2_yuv(rgbColor, conv_standard);\n"
+											   "    FragColor = vec4 (yuv, 1.0);\n"
+											   "}";
+
 AHardwareBufferHelper::AHardwareBufferHelper() :
 		pEGLDisplay(nullptr),
 		pEGLContext(nullptr),
@@ -33,7 +64,11 @@ AHardwareBufferHelper::AHardwareBufferHelper() :
 		mTextureColorId(GL_NONE),
 		mOESTextureId(GL_NONE),
 		mDstFBO (GL_NONE),
-		m_VAO(GL_NONE)
+		m_VAO(GL_NONE),
+		m_pShaderHelper(nullptr),
+		mWidth(0),
+		mHeight(0),
+		mRenderNum(0)
 {
 	LOGD("GraphicBufferHelper");
 	USAGE = (AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN|AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN);
@@ -198,6 +233,10 @@ int AHardwareBufferHelper::initGLBuffer ()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_VBO[2]);
 	glBindVertexArray(GL_NONE);
 
+	if (m_pShaderHelper)
+		SafeDelete(m_pShaderHelper);
+	m_pShaderHelper = new Shader_Helper (hardware_vertex_shader.c_str(), hardware_fragment_shader.c_str());
+
 	return ERROR_OK;
 }
 
@@ -213,6 +252,7 @@ void AHardwareBufferHelper::unInitGLBuffer ()
 		if (val)
 			glDeleteBuffers(1, &val);
 	}
+	SafeDelete(m_pShaderHelper);
 }
 
 int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo)
@@ -237,8 +277,14 @@ int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageIn
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawHelper::CheckGLError("onDrawFrame glClear");
 
+	m_pShaderHelper->use();
+	DrawHelper::CheckGLError("onDrawFrame use");
+	glActiveTexture(GL_TEXTURE0);
+	DrawHelper::CheckGLError("onDrawFrame glActiveTexture");
 	glBindTexture(GL_TEXTURE_2D, mTextureColorId);
 	DrawHelper::CheckGLError("onDrawFrame glBindTexture");
+	m_pShaderHelper->setInt("screenTexture", 0);
+	DrawHelper::CheckGLError("onDrawFrame setInt");
 
 	glBindVertexArray(m_VAO);
 	DrawHelper::CheckGLError("onDrawFrame glBindVertexArray");
@@ -259,12 +305,35 @@ int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageIn
 		ret = getGPUBufferData(lpMyImageInfo);
 	STOP_TIME("getGPUBufferDate")
 	LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
+
+
+	// normal render
+	/*glViewport(0, 0, nScreenWidth, nScreenHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+	pShaderHelperHardwareNormal->use();
+	pShaderHelperHardwareNormal->setInt("texture1", 0);
+	DrawHelper::CheckGLError("drawFBO normal render setInt");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(targetOES, nOESTextureId);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (const void *)0);
+	DrawHelper::CheckGLError("drawFBO normal render glDrawElements");
+	glBindTexture(targetOES, GL_NONE);
+	glBindVertexArray(GL_NONE);*/
+
+	++mRenderNum;
+
 	return ret;
 }
 
 bool AHardwareBufferHelper::getCreateState()
 {
 	return bCreated;
+}
+
+int AHardwareBufferHelper::getRenderNum ()
+{
+	return mRenderNum;
 }
 
 void AHardwareBufferHelper::initDstOesTextureId ()

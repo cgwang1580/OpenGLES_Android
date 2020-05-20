@@ -95,39 +95,6 @@ static const string fbo_normal_fragment_shader = "#version 300 es\n"
 												 "    FragColor = texture (texture1, TexCoords) * vec4 (1.0);\n"
 												 "}";
 
-
-
-static const string hardware_vertex_shader = "#version 300 es\n"
-										"\n"
-										"layout (location = 0) in vec3 aPos;\n"
-										"layout (location = 1) in vec2 aTexCoords;\n"
-										"\n"
-										"out vec2 TexCoords;\n"
-										"\n"
-										"void main()\n"
-										"{\n"
-										"    gl_Position = vec4(aPos, 1.0);\n"
-										"    TexCoords = aTexCoords;\n"
-										"}";
-
-static const string hardware_fragment_shader = "#version 300 es\n"
-											   "#extension GL_EXT_YUV_target: require\n"
-											   "\n"
-										  "precision mediump float;\n"
-										  "in vec2 TexCoords;\n"
-										  "layout(yuv) out vec4 FragColor;\n"
-										  "\n"
-										  "uniform sampler2D screenTexture;\n"
-										  "\n"
-										  "void main()\n"
-										  "{\n"
-										  "	   yuvCscStandardEXT conv_standard = itu_601_full_range;\n"
-										  "    vec4 rgbaColor = texture(screenTexture, TexCoords);\n"
-										  "	   vec3 rgbColor = vec3(rgbaColor.r, rgbaColor.g, rgbaColor.b);\n"
-										  "    vec3 yuv = rgb_2_yuv(rgbColor, conv_standard);\n"
-										  "    FragColor = vec4 (yuv, 1.0);\n"
-										  "}";
-
 static const string hardware_normal_fragment_shader = "#version 300 es\n"
 												 "precision mediump float;\n"
 												 "out vec4 FragColor;\n"
