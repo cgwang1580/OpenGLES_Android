@@ -145,9 +145,6 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			ret = drawByHardwareBuffer(nullptr, MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
 			break;
-		case 4:
-			ret = drawByHardwareBuffer2 (MyProcessorHandle->lpMyImageInfo);
-			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;

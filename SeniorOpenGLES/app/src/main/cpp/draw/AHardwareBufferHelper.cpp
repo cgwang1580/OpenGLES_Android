@@ -301,9 +301,9 @@ int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageIn
 	DrawHelper::CheckGLError("onDrawFrame glViewport");
 
 	int ret = ERROR_OK;
-	START_TIME("getGPUBufferDate")
+	START_TIME("getGPUBufferData")
 		ret = getGPUBufferData(lpMyImageInfo);
-	STOP_TIME("getGPUBufferDate")
+	STOP_TIME("getGPUBufferData")
 	LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
 
 

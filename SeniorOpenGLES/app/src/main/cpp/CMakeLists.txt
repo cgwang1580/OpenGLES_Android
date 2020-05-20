@@ -35,8 +35,6 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/shader
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardwarebuffer
-        ${CMAKE_CURRENT_SOURCE_DIR}/glm
 )
 
 link_directories(
@@ -51,8 +49,6 @@ list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/AHardwareBufferHelper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardwarebuffer/HardwareBufferHelper.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardwarebuffer/GLUtils.cpp
         )
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections")

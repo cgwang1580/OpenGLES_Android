@@ -2,7 +2,6 @@
 // Created by wcg3031 on 2020/4/2.
 //
 
-#include <HardwareBufferHelper.h>
 #include "draw_utils.h"
 #include "LogAndroid.h"
 #include "shader_content.h"
@@ -429,91 +428,6 @@ int drawByHardwareBuffer (Shader_Helper *pShaderHelperHardwareNormal, const AHar
 	}while (false);
 
 	OpenImageHelper::FreeMyImageInfo(&myImageInfo);
-	glDeleteTextures(1, &textureColorId);
-
-	return ret;
-}
-
-int drawByHardwareBuffer2 (const LPMyImageInfo lpMyImageInfo)
-{
-	LOGD ("drawByHardwareBuffer");
-
-	int ret = ERROR_OK;
-	CHECK_NULL_INPUT(lpMyImageInfo)
-	CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
-
-	GLint viewPort[4] {0};
-	glGetIntegerv(GL_VIEWPORT, viewPort);
-	LOGD("drawByHardwareBuffer viewPort %d %d %d %d", viewPort[0], viewPort[1], viewPort[2], viewPort[3]);
-	int nScreenWidth = viewPort[2];
-	int nScreenHeight = viewPort[3];
-
-	int nImageWidth = lpMyImageInfo->width;
-	int nImageHeight = lpMyImageInfo->height;
-	int nImageFormat = lpMyImageInfo->format;
-
-	GLuint textureColorId = GL_NONE;
-	do
-	{
-		const GLenum TargetColor = GL_TEXTURE_2D;
-
-		// create a color texture as src
-		DrawHelper::GetOneTexture(TargetColor, &textureColorId);
-		DrawHelper::CheckGLError("GetOneTexture");
-		glActiveTexture(GL_TEXTURE0);
-		DrawHelper::CheckGLError("glActiveTexture");
-		glBindTexture(TargetColor, textureColorId);
-		DrawHelper::CheckGLError("glBindTexture");
-		if (NULL != lpMyImageInfo->buffer[0]) {
-			glTexImage2D (TargetColor, 0, GL_RGBA, nImageWidth, nImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, lpMyImageInfo->buffer[0]);
-			DrawHelper::CheckGLError("glTexImage2D");
-			glGenerateMipmap (TargetColor);
-			DrawHelper::CheckGLError("glGenerateMipmap");
-		} else {
-			LOGE("drawByHardwareBuffer myImageInfo.buffer is NULL");
-		}
-		glBindTexture(TargetColor, GL_NONE);
-		DrawHelper::CheckGLError("glBindTexture");
-
-		int imgW = lpMyImageInfo->width;
-		int imgH = lpMyImageInfo->height;
-		ASVLOFFSCREEN outputImg = {0};
-		outputImg.i32Width = imgW;
-		outputImg.i32Height = imgH;
-		outputImg.pi32Pitch[0] = imgW;
-		outputImg.pi32Pitch[1] = imgW;
-		outputImg.u32PixelArrayFormat = ASVL_PAF_NV21;
-		long lSize = (long)(imgW * imgH * 1.5);
-		outputImg.ppu8Plane[0] = static_cast<MUInt8 *>(malloc(lSize));
-		outputImg.ppu8Plane[1] = outputImg.ppu8Plane[0] + outputImg.pi32Pitch[0] * outputImg.i32Height;
-		HardwareBufferHelper *hardwareBufferHelper = new HardwareBufferHelper();
-		hardwareBufferHelper->Init(imgW, imgH, ASVL_PAF_NV21);
-		hardwareBufferHelper->DrawFrame(textureColorId, &outputImg);
-
-		char sPath[MAX_PATH]{0};
-		sprintf(sPath, "/sdcard/OpenGLESTest/gpu_1_%dX%d.NV21", outputImg.pi32Pitch[0], outputImg.i32Height);
-		FILE *fp = fopen(sPath, "wb");
-		fwrite(outputImg.ppu8Plane[0], 1, lSize, fp);
-		fclose(fp);
-
-		/*if (MY_FORMAT_NV21 == myImageInfo.format || MY_FORMAT_NV12 == myImageInfo.format)
-		{
-			char sPath[MAX_PATH]{0};
-			sprintf(sPath, "/sdcard/OpenGLESTest/gpu_0_%dx%d.nv12", myImageInfo.channel[0], myImageInfo.height);
-			OpenImageHelper::SaveImageToYuv(&myImageInfo, sPath);
-		}*/
-		free(outputImg.ppu8Plane[0]);
-		hardwareBufferHelper->UnInit();
-		delete hardwareBufferHelper;
-		hardwareBufferHelper = NULL;
-
-		if (ERROR_OK != ret)
-			break;
-
-	}while (false);
-
-
-
 	glDeleteTextures(1, &textureColorId);
 
 	return ret;
