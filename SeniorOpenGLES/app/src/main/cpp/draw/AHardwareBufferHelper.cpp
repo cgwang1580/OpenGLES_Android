@@ -120,7 +120,7 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 	if (EGL_NO_IMAGE_KHR == pEGLImageKHR)
 	{
 		LOGE("eglCreateImageKHR error");
-		return ERROR_GL_STATUS;
+		return ERROR_GL_STATE;
 	}
 
 	initGLBuffer();
@@ -235,7 +235,7 @@ int AHardwareBufferHelper::initGLBuffer ()
 
 	if (m_pShaderHelper)
 		SafeDelete(m_pShaderHelper);
-	m_pShaderHelper = new Shader_Helper (hardware_vertex_shader.c_str(), hardware_fragment_shader.c_str());
+	m_pShaderHelper = new ShaderHelper (hardware_vertex_shader.c_str(), hardware_fragment_shader.c_str());
 
 	return ERROR_OK;
 }

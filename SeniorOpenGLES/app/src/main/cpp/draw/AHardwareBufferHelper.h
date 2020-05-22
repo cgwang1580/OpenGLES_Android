@@ -11,7 +11,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3ext.h>
 #include <android/hardware_buffer.h>
-#include <Shader_Helper.h>
+#include <ShaderHelper.h>
 #include "MyImageInfo.h"
 
 /**
@@ -38,7 +38,7 @@ private:
 	GLuint m_VAO;
 	GLuint m_VBO[3];
 
-	Shader_Helper *m_pShaderHelper;
+	ShaderHelper *m_pShaderHelper;
 
 	GLuint mTextureColorId;
 	GLuint mOESTextureId;

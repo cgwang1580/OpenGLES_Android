@@ -1,16 +1,14 @@
+#include <common.h>
 #include "LogAndroid.h"
-#include "Shader_Helper.h"
+#include "ShaderHelper.h"
 
-Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentShaderCode) {
-
-	//cout << "MyShader begin" << endl;
-	LOGD("Shader_Helper begin");
-
-	// compile shader.cpp
+ShaderHelper::ShaderHelper(const char* vertexShaderCode, const char* fragmentShaderCode):
+		m_nShaderState(ERROR_OK), m_nProgramId(0)
+{
+	LOGD("Shader_Helper");
 	unsigned int vertexShader, fragmentShader;
 	int result = 0;
 	char infoLog[MY_MAX_PATH * 2] = { 0 };
-
 	do {
 		// vertex shader.cpp
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -20,8 +18,8 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &result);
 		if (!result) {
 			glGetShaderInfoLog(vertexShader, MY_MAX_PATH * 2, NULL, infoLog);
-			//cout << "glCompileShader vertexShader error, " << infoLog << endl;
 			LOGE ("glCompileShader vertexShader error, %s", infoLog);
+			m_nShaderState = ERROR_GL_STATE;
 			break;
 		}
 
@@ -33,22 +31,22 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);
 		if (!result) {
 			glGetShaderInfoLog(fragmentShader, MY_MAX_PATH * 2, NULL, infoLog);
-			//cout << "glCompileShader fragmentShader error, " << infoLog << endl;
 			LOGE ("glCompileShader fragmentShader error, %s ", infoLog);
+			m_nShaderState = ERROR_GL_STATE;
 			break;
 		}
 
 		// shader.cpp program
-		progreamId = glCreateProgram();
-		glAttachShader(progreamId, vertexShader);
-		glAttachShader(progreamId, fragmentShader);
-		glLinkProgram(progreamId);
+		m_nProgramId = glCreateProgram();
+		glAttachShader(m_nProgramId, vertexShader);
+		glAttachShader(m_nProgramId, fragmentShader);
+		glLinkProgram(m_nProgramId);
 		// get link result
-		glGetProgramiv(progreamId, GL_LINK_STATUS, &result);
+		glGetProgramiv(m_nProgramId, GL_LINK_STATUS, &result);
 		if (!result) {
-			glGetProgramInfoLog(progreamId, MY_MAX_PATH * 2, NULL, infoLog);
-			//cout << "glLinkProgram progreamId error, " << infoLog << endl;
+			glGetProgramInfoLog(m_nProgramId, MY_MAX_PATH * 2, NULL, infoLog);
 			LOGE ("glLinkProgram progreamId error, %s ", infoLog);
+			m_nShaderState = ERROR_GL_STATE;
 			break;
 		}
 
@@ -58,25 +56,30 @@ Shader_Helper::Shader_Helper(const char* vertexShaderCode, const char* fragmentS
 	} while (false);
 }
 
-void Shader_Helper::use() {
-	glUseProgram(progreamId);
-}
-
-void Shader_Helper::setBool (const string &name, bool value) const{
-	glUniform1i(glGetUniformLocation(progreamId, name.c_str()), value);
-}
-
-void Shader_Helper::setInt(const string &name, int value) const {
-	glUniform1i(glGetUniformLocation(progreamId, name.c_str()), value);
-}
-
-void Shader_Helper::setfloat(const string &name, float value) const {
-	glUniform1f(glGetUniformLocation(progreamId, name.c_str()), value);
-}
-
-void Shader_Helper::setVec3f(const string &name, float value1, float value2, float value3) const
+int ShaderHelper::getShaderHelperState ()
 {
-	glUniform3f(glGetUniformLocation(progreamId, name.c_str()), value1, value2, value3);
+	return m_nShaderState;
+}
+
+void ShaderHelper::use() {
+	glUseProgram(m_nProgramId);
+}
+
+void ShaderHelper::setBool (const string &name, bool value) const{
+	glUniform1i(glGetUniformLocation(m_nProgramId, name.c_str()), value);
+}
+
+void ShaderHelper::setInt(const string &name, int value) const {
+	glUniform1i(glGetUniformLocation(m_nProgramId, name.c_str()), value);
+}
+
+void ShaderHelper::setFloat(const string &name, float value) const {
+	glUniform1f(glGetUniformLocation(m_nProgramId, name.c_str()), value);
+}
+
+void ShaderHelper::setVec3f(const string &name, float value1, float value2, float value3) const
+{
+	glUniform3f(glGetUniformLocation(m_nProgramId, name.c_str()), value1, value2, value3);
 }
 
 /*

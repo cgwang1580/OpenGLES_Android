@@ -35,6 +35,8 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/shader
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
+        ${CMAKE_CURRENT_SOURCE_DIR}/render3d
+        ${CMAKE_CURRENT_SOURCE_DIR}/glm
 )
 
 link_directories(
@@ -45,10 +47,12 @@ link_directories(
 set(LIST_SRC_FILES native.cpp)
 
 list(APPEND LIST_SRC_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/Shader_Helper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/ShaderHelper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/AHardwareBufferHelper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleTransform.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/render3d/sample_code.cc
         )
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections")

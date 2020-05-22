@@ -5,7 +5,7 @@
 #include "draw_utils.h"
 #include "LogAndroid.h"
 #include "shader_content.h"
-#include "Shader_Helper.h"
+#include "ShaderHelper.h"
 #include "MyDefineUtils.h"
 #include "Utils.h"
 #include "OpenImageHelper.h"
@@ -31,13 +31,13 @@ int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const stri
 		pShaderSet->pShaderHelper = nullptr;
 	}
 
-	pShaderSet->pShaderHelper = new Shader_Helper (sVertexShader, sFragShader);
+	pShaderSet->pShaderHelper = new ShaderHelper (sVertexShader, sFragShader);
 	CHECK_NULL_MALLOC(pShaderSet->pShaderHelper)
 
 	return 0;
 }
 
-int drawTriangle (Shader_Helper *pShaderHelper)
+int drawTriangle (ShaderHelper *pShaderHelper)
 {
 	LOGD("drawTriangle");
 	CHECK_NULL_INPUT(pShaderHelper)
@@ -84,12 +84,12 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	glBindVertexArray(0);
 
 	pShaderHelper->use();
-	pShaderHelper->setfloat("g_color", 0.2f);
+	pShaderHelper->setFloat("g_color", 0.2f);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 
-	pShaderHelper->setfloat("g_color", 1.0f);
+	pShaderHelper->setFloat("g_color", 1.0f);
 	glBindVertexArray(VAO2);
 	glDrawElements(GL_TRIANGLES, sizeof(index_multi)/ sizeof(int), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -104,7 +104,7 @@ int drawTriangle (Shader_Helper *pShaderHelper)
 	return 0;
 }
 
-int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
+int drawTexture (ShaderHelper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 {
 	LOGD("drawTexture");
 	CHECK_NULL_INPUT(pShaderHelper)
@@ -196,7 +196,7 @@ int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo
 	return ERROR_OK;
 }
 
-int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo)
+int drawFBO (ShaderHelper *pShaderHelperFBO, ShaderHelper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo)
 {
 	LOGD ("drawFBO");
 
@@ -312,7 +312,7 @@ int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal
 	if (GL_FRAMEBUFFER_COMPLETE != tmpStatus)
 	{
 		LOGE("glCheckFramebufferStatus tmpStatus = %d", tmpStatus);
-		return ERROR_GL_STATUS;
+		return ERROR_GL_STATE;
 	}
 
 	// draw offscreen
@@ -362,7 +362,7 @@ int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal
 	return ERROR_OK;
 }
 
-int drawByHardwareBuffer (Shader_Helper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
+int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
 {
 	LOGD ("drawByHardwareBuffer");
 

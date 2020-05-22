@@ -5,10 +5,11 @@
 #ifndef HELLOTRIANGLE_PROCESSOR_INNER_H
 #define HELLOTRIANGLE_PROCESSOR_INNER_H
 
-#include "Shader_Helper.h"
+#include "ShaderHelper.h"
 #include "processor.h"
 #include <string>
 #include <AHardwareBufferHelper.h>
+#include <SampleTransform.h>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ typedef struct __shader_set_
 {
 	string vertexShader;
 	string fragmentShader;
-	Shader_Helper *pShaderHelper;
+	ShaderHelper *pShaderHelper;
 }ShaderSet, *LPShaderSet;
 
 typedef struct __tag_processor_handle
@@ -40,6 +41,7 @@ typedef struct __tag_processor_handle
 	LPMyImageInfo lpMyImageInfo;
 	LPMyImageInfo lpMyImageInfo_YUV;
 	AHardwareBufferHelper *pHardwareBufferHelper;
+	SampleBase *m_pSampleTransform;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

@@ -5,18 +5,18 @@
 #ifndef HELLOTRIANGLE_DRAW_UTILS_H
 #define HELLOTRIANGLE_DRAW_UTILS_H
 
-#include "Shader_Helper.h"
+#include "ShaderHelper.h"
 #include "processor_inner.h"
 
 int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader);
 
-int drawTriangle (Shader_Helper *pShaderHelper);
+int drawTriangle (ShaderHelper *pShaderHelper);
 
-int drawTexture (Shader_Helper *pShaderHelper, const LPMyImageInfo lpMyImageInfo);
+int drawTexture (ShaderHelper *pShaderHelper, const LPMyImageInfo lpMyImageInfo);
 
-int drawFBO (Shader_Helper *pShaderHelperFBO, Shader_Helper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo);
+int drawFBO (ShaderHelper *pShaderHelperFBO, ShaderHelper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo);
 
-int drawByHardwareBuffer (Shader_Helper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
+int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
 
 int drawByHardwareBuffer2 (const LPMyImageInfo lpMyImageInfo);
 

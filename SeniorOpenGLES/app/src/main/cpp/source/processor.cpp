@@ -8,6 +8,7 @@
 #include <string>
 #include <MyDefineUtils.h>
 #include <OpenImageHelper.h>
+#include <sample_code.h>
 #include "shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
@@ -69,6 +70,15 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	test_main ();
+
+	if (nullptr == MyProcessorHandle->m_pSampleTransform)
+	{
+		MyProcessorHandle->m_pSampleTransform = new SampleTransform ();
+		MyProcessorHandle->m_pSampleTransform->InitSample();
+	}
+
 	return ret;
 }
 
@@ -124,7 +134,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 
 	}
 
-	int nDrawType = 3;
+	int nDrawType = 4;
 
 	switch (nDrawType)
 	{
@@ -145,6 +155,9 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			ret = drawByHardwareBuffer(nullptr, MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
 			break;
+		case 4:
+			ret = MyProcessorHandle->m_pSampleTransform->OnDrawFrame();
+			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
@@ -159,6 +172,8 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
+	MyProcessorHandle->m_pSampleTransform->UnInitSample();
+	SafeDelete(MyProcessorHandle->m_pSampleTransform);
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
