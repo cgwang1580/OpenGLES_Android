@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <ShaderHelper.h>
+#include <common.h>
+#include <MyDefineUtils.h>
 #include "vec3.hpp"
 #include "barHelper.h"
-#include "SampleBase.h"
 
 struct Vertex
 {
@@ -15,15 +17,15 @@ struct Vertex
 	glm::vec3 TexCoord;
 };
 
-class SampleRender3D : public SampleBase
+class SampleRender3D
 {
 public:
 	SampleRender3D ();
 	~SampleRender3D ();
 
-	virtual RESULT InitSample ();
-	virtual void UnInitSample ();
-	virtual RESULT OnDrawFrame ();
+	RESULT InitSample ();
+	void UnInitSample ();
+	RESULT OnDrawFrame ();
 
 private:
 	RESULT createShader();
@@ -32,11 +34,23 @@ private:
 	void destroyGLBuffer ();
 	RESULT createRectBars ();
 	RESULT convertVertex ();
+	void generateRecBarsTest(
+			SimpleMesh& mesh,
+			Vector3D<float>& center,
+			float radius,
+			float height,
+			float width,
+			int num_bars,
+			Vector3D<unsigned char> default_color = Vector3D<unsigned char>(255, 0, 0));
 
 	SimpleMesh m_SimpleMesh;
 	vector <Vertex> m_VertexLists;
 	vector <unsigned int> m_Indices;
 
+	GLuint m_VAO;
+	GLuint m_VBO;
+	GLuint m_EBO;
+	ShaderHelper *m_pShaderHelper;
 	GLuint m_VBO_Position;
 	GLuint m_VBO_Normal;
 	GLuint m_VBO_Color;

@@ -111,7 +111,7 @@ public:
 	}
 };
 
-void generateRecBarsTest(
+/*void generateRecBarsTest(
 		SimpleMesh& mesh,
 		Vector3D<float>& center,
 		float radius,
@@ -146,6 +146,6 @@ void generateRecBarsTest(
 		mesh.faces.push_back(Vector3D<int>(4 * k, 4 * k + 1, 4 * k + 2));
 		mesh.faces.push_back(Vector3D<int>(4 * k + 2, 4 * k + 3, 4 * k));
 	}
-}
+}*/
 
 #endif

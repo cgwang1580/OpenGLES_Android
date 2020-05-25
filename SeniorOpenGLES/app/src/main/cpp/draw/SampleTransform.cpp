@@ -5,6 +5,7 @@
 #include <LogAndroid.h>
 #include <common.h>
 #include <MyDefineUtils.h>
+#include <GLES3/gl3.h>
 #include "SampleTransform.h"
 
 #define CHECK_OK(_ret_)		if (ERROR_OK != _ret_) {return _ret_;}

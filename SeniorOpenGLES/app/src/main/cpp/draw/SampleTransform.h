@@ -4,21 +4,29 @@
 
 #pragma once
 
-#include "SampleBase.h"
+#include <ShaderHelper.h>
+#include <common.h>
+#include <MyDefineUtils.h>
 
-class SampleTransform : public SampleBase
+class SampleTransform
 {
 public:
 	SampleTransform ();
 	~SampleTransform();
 
-	virtual RESULT InitSample ();
-	virtual void UnInitSample ();
-	virtual RESULT OnDrawFrame ();
+	RESULT InitSample ();
+	void UnInitSample ();
+	RESULT OnDrawFrame ();
 
 private:
 	RESULT createShader();
 	RESULT creteGLBuffer ();
+
+	GLuint m_VAO;
+	GLuint m_VBO;
+	GLuint m_EBO;
+	GLuint m_sVBO[2];
+	ShaderHelper *m_pShaderHelper;
 
 	const char triangle_vertex_shader[MAX_CONTENT] = "#version 300 es\n"
 										  "layout (location = 0) in vec3 aPos;\n"

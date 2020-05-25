@@ -5,6 +5,8 @@
 #ifndef HELLOOPENGLES_COMMON_H
 #define HELLOOPENGLES_COMMON_H
 
+#define RESULT		int
+
 typedef enum _enum_error_code_
 {
 	ERROR_OK = 0x00,

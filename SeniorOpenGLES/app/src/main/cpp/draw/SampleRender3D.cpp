@@ -164,3 +164,40 @@ RESULT SampleRender3D::convertVertex ()
 
 	return ERROR_OK;
 }
+
+void SampleRender3D::generateRecBarsTest(
+		SimpleMesh& mesh,
+		Vector3D<float>& center,
+		float radius,
+		float height,
+		float width,
+		int num_bars,
+		Vector3D<unsigned char> default_color)
+{
+	float half_height = height / 2.f, half_width = width / 2.f;
+	Vector3D<float> points[4] = {
+			Vector3D<float>(radius, -half_width, -half_height),
+			Vector3D<float>(radius, half_width, -half_height),
+			Vector3D<float>(radius, half_width, half_height),
+			Vector3D<float>(radius, -half_width, half_height)
+	};
+
+	mesh.vertices.clear();
+	mesh.faces.clear();
+	float delta_theta = M_PI * 2.f / float(num_bars);
+	for (size_t k = 0; k < num_bars; k++) {
+		float theta = k * delta_theta;
+		float cos = cosf(theta);
+		float sin = sinf(theta);
+		for (size_t i = 0; i < 4; i++) {
+			Vector3D<float> p;
+			p[0] = cos * points[i][0] - sin * points[i][1];
+			p[1] = sin * points[i][0] + cos * points[i][1];
+			p[2] = points[i][2];
+			mesh.vertices.push_back(center + p);
+			mesh.colors.push_back(default_color);
+		}
+		mesh.faces.push_back(Vector3D<int>(4 * k, 4 * k + 1, 4 * k + 2));
+		mesh.faces.push_back(Vector3D<int>(4 * k + 2, 4 * k + 3, 4 * k));
+	}
+}
