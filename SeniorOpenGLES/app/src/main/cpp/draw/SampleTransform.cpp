@@ -39,27 +39,9 @@ const GLuint vIndex[36] {
 		2, 6, 7
 };
 
-const char triangle_vertex_shader[] = "#version 300 es\n"
-									  "layout (location = 0) in vec3 aPos;\n"
-									  "void main()\n"
-									  "{\n"
-									  "    gl_Position = vec4(aPos, 1.0);\n"
-									  "}";
-
-const char triangle_fragment_shader[] = "#version 300 es\n"
-										"precision mediump float;\n"
-										"out vec4 FragColor;\n"
-										"\n"
-										"void main()\n"
-										"{\n"
-										"    FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f);\n"
-										"}";
-
 SampleTransform::SampleTransform()
 {
 	LOGD("SampleTransform::SampleTransform");
-	m_VAO = GL_NONE;
-	m_pShaderHelper = nullptr;
 }
 
 SampleTransform::~SampleTransform()

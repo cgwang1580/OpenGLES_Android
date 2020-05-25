@@ -7,7 +7,8 @@
 
 #include "common.h"
 
-#define MAX_PATH	256
+#define MAX_PATH		256
+#define MAX_CONTENT		512
 
 #define SafeFree(_p_)				if (_p_) {free (_p_); _p_ = nullptr;}
 #define SafeDelete(_p_)				if (_p_) {delete _p_; _p_ = nullptr;}

@@ -10,6 +10,7 @@
 #include <string>
 #include <AHardwareBufferHelper.h>
 #include <SampleTransform.h>
+#include <SampleRender3D.h>
 
 using namespace std;
 

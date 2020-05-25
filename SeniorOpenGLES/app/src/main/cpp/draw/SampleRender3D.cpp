@@ -9,36 +9,12 @@
 #include "MyDefineUtils.h"
 #include "DrawHelper.h"
 
-const char triangle_vertex_shader[] = "#version 300 es\n"
-									  "layout (location = 0) in vec3 aPos;\n"
-		                              "layout (location = 1) in vec3 aNorm\n"
-		                              "layout (location = 2) in vec3 aColor\n"
-		                              "out vec3 oColor\n"
-									  "void main()\n"
-									  "{\n"
-									  "    gl_Position = vec4(aPos, 1.0);\n"
-									  "    oColor = aColor;\n"
-									  "}";
-
-const char triangle_fragment_shader[] = "#version 300 es\n"
-										"precision mediump float;\n"
-										"in vec3 oColor;\n"
-										"out vec4 FragColor;\n"
-										"\n"
-										"void main()\n"
-										"{\n"
-										"    FragColor = (oColor, 1.0);\n"
-										"}";
-
 SampleRender3D::SampleRender3D()
 {
 	LOGD("SampleRender3D::SampleRender3D");
-	m_VAO = GL_NONE;
-	m_VBO = GL_NONE;
 	m_VBO_Position = GL_NONE;
 	m_VBO_Normal = GL_NONE;
 	m_VBO_Color = GL_NONE;
-	m_pShaderHelper = nullptr;
 }
 
 SampleRender3D::~SampleRender3D()
@@ -161,7 +137,7 @@ RESULT SampleRender3D::createRectBars ()
 	Vector3D<float> bar_center(0.f, 0.f, 0.05f);
 	float bar_radius = 0.12f, bar_height = 0.02f, bar_width = 0.01f;
 	int num_bars = 16;
-	generateRecBars(m_SimpleMesh, bar_center, bar_radius, bar_height, bar_width, num_bars);
+	generateRecBarsTest(m_SimpleMesh, bar_center, bar_radius, bar_height, bar_width, num_bars);
 	return ERROR_OK;
 }
 
