@@ -6,6 +6,7 @@
 #define SENIOROPENGLES_DRAWHELPER_H
 
 #include "GLES3/gl3.h"
+#include "GLES2/gl2ext.h"
 #include "EGL/egl.h"
 #include <string>
 #include "OpenImageHelper.h"

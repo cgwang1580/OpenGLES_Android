@@ -172,17 +172,18 @@ RESULT SampleRender3D::convertVertex ()
 	Vertex tVertex;
 	for (int i = 0; i < m_SimpleMesh.vertices.size(); ++i)
 	{
-		glm::vec3 aPosition = (m_SimpleMesh.vertices[0], m_SimpleMesh.vertices[1], m_SimpleMesh.vertices[2]);
+		glm::vec3 aPosition ((float)(m_SimpleMesh.vertices[i][0]), m_SimpleMesh.vertices[i][1], m_SimpleMesh.vertices[i][2]);
 		tVertex.Position = aPosition;
-		glm::vec3 aNormal = (m_SimpleMesh.normals[0], m_SimpleMesh.normals[1], m_SimpleMesh.normals[2]);
+		glm::vec3 aNormal (m_SimpleMesh.normals[i][0], m_SimpleMesh.normals[i][1], m_SimpleMesh.normals[i][2]);
 		tVertex.Normal = aNormal;
 		m_VertexLists.push_back(tVertex);
 	}
 
 	for (auto val : m_SimpleMesh.faces)
 	{
-		glm::vec3 aIndices = (val[0], val[1], val[2]);
-		m_Indices.push_back(aIndices);
+		m_Indices.push_back(val[0]);
+		m_Indices.push_back(val[1]);
+		m_Indices.push_back(val[2]);
 	}
 
 	return ERROR_OK;

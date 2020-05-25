@@ -8,6 +8,7 @@
 #include <string>
 #include <MyDefineUtils.h>
 #include <OpenImageHelper.h>
+#include <SampleRender3D.h>
 #include "shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
@@ -78,7 +79,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 
 	if (nullptr == MyProcessorHandle->m_pSampleRender3D)
 	{
-		MyProcessorHandle->m_pSampleRender3D = new SampleTransform ();
+		MyProcessorHandle->m_pSampleRender3D = new SampleRender3D ();
 		MyProcessorHandle->m_pSampleRender3D->InitSample();
 	}
 

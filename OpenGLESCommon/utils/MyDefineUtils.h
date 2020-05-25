@@ -24,4 +24,6 @@
 																		LOGE ("%s malloc failed", _sInfoTitle_); \
 																		break;}
 
+#define CHECK_OK_RETURN(_ret_)	if (ERROR_OK != (_ret_)) return _ret_;
+
 #endif //HELLOTRIANGLE_MYDEFINEUTILS_H
