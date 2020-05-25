@@ -42,6 +42,7 @@ typedef struct __tag_processor_handle
 	LPMyImageInfo lpMyImageInfo_YUV;
 	AHardwareBufferHelper *pHardwareBufferHelper;
 	SampleBase *m_pSampleTransform;
+	SampleBase *m_pSampleRender3D;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

@@ -8,7 +8,6 @@
 #include <string>
 #include <MyDefineUtils.h>
 #include <OpenImageHelper.h>
-#include <sample_code.h>
 #include "shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
@@ -71,12 +70,16 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	test_main ();
-
 	if (nullptr == MyProcessorHandle->m_pSampleTransform)
 	{
 		MyProcessorHandle->m_pSampleTransform = new SampleTransform ();
 		MyProcessorHandle->m_pSampleTransform->InitSample();
+	}
+
+	if (nullptr == MyProcessorHandle->m_pSampleRender3D)
+	{
+		MyProcessorHandle->m_pSampleRender3D = new SampleTransform ();
+		MyProcessorHandle->m_pSampleRender3D->InitSample();
 	}
 
 	return ret;
@@ -133,9 +136,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::SaveImageToYuv(MyProcessorHandle->lpMyImageInfo_YUV, sPath);*/
 
 	}
-
-	int nDrawType = 4;
-
+	int nDrawType = 5;
 	switch (nDrawType)
 	{
 		case 0:
@@ -158,6 +159,9 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		case 4:
 			ret = MyProcessorHandle->m_pSampleTransform->OnDrawFrame();
 			break;
+		case 5:
+			ret = MyProcessorHandle->m_pSampleRender3D->OnDrawFrame();
+			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
@@ -172,13 +176,22 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
+
 	MyProcessorHandle->m_pSampleTransform->UnInitSample();
 	SafeDelete(MyProcessorHandle->m_pSampleTransform);
+
+	MyProcessorHandle->m_pSampleRender3D->UnInitSample();
+	SafeDelete(MyProcessorHandle->m_pSampleRender3D);
+
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
 	//SafeDelete(MyProcessorHandle->mShaderSetHardwareNormal.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetFBO.pShaderHelper);
+	SafeDelete (MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
 	if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
 	{
 		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();

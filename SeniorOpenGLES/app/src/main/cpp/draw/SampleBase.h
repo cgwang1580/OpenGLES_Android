@@ -24,6 +24,8 @@ public:
 protected:
 	ShaderHelper *m_pShaderHelper;
 	GLuint m_VAO;
+	GLuint m_VBO;
+	GLuint m_EBO;
 	GLuint m_sVBO[2];
 	GLuint m_Texture;
 };

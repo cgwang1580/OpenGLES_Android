@@ -10,6 +10,8 @@
 #include <string>
 #include "OpenImageHelper.h"
 
+#define SafeDeleteGLBuffer(_num_, _pVal_)	if (_pVal_) {glDeleteBuffers ((_num_), (_pVal_));}
+
 class DrawHelper
 {
 public:

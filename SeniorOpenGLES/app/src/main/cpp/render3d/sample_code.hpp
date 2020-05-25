@@ -2,6 +2,8 @@
 #include <fstream>
 #include <math.h>
 
+#pragma once
+
 using namespace std;
 
 template<typename T> class Vector3D
