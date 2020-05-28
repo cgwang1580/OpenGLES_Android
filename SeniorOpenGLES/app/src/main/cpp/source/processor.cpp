@@ -32,7 +32,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 	memset(MyProcessorHandle, 0, sizeof(ProcessorHandle));
 
-	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
+	/*int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);
 
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
@@ -44,8 +44,8 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
 
-	/*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*/
+	*//*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*//*
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
@@ -63,10 +63,10 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo_YUV);
 	memset(MyProcessorHandle->lpMyImageInfo_YUV, 0, sizeof(MyImageInfo));
 
-	if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
+	*//*if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
 	{
 		MyProcessorHandle->pHardwareBufferHelper = new AHardwareBufferHelper();
-	}
+	}*//*
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,7 +75,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	{
 		MyProcessorHandle->m_pSampleTransform = new SampleTransform ();
 		MyProcessorHandle->m_pSampleTransform->InitSample();
-	}
+	}*/
 
 	if (nullptr == MyProcessorHandle->m_pSampleRender3D)
 	{
@@ -83,7 +83,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 		MyProcessorHandle->m_pSampleRender3D->InitSample();
 	}
 
-	return ret;
+	return ERROR_OK;
 }
 
 int onSurfaceChanged (const PHandle pProcessorHandle, const int width, const int height)
@@ -101,24 +101,6 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	++MyProcessorHandle->mRenderTime;
 
 	int ret = ERROR_OK;
-	/*float r = 0;
-	float g = 0;
-	float b = 0;
-	MyProcessorHandle->mColorSet.alpha = 1.0;
-	float alpha = MyProcessorHandle->mColorSet.alpha;
-
-	MyProcessorHandle->mColorSet.r += 0.1;
-	MyProcessorHandle->mColorSet.g += 0.1;
-	MyProcessorHandle->mColorSet.b += 0.1;
-
-	r = MyProcessorHandle->mColorSet.r;
-	g = MyProcessorHandle->mColorSet.g;
-	b = MyProcessorHandle->mColorSet.b;
-	r = r > 1 ? 1.0f : r;
-	g = g > 1 ? 1.0f : g;
-	b = b > 1 ? 1.0f : b;
-	LOGD("onDrawFrame r = %f, g = %f, b = %f, alpha = %f", r, g, b, alpha);
-	glClearColor(r, g, b, alpha);*/
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -168,7 +150,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			break;
 	}
 	sleep(1);
-	return 0;
+	return ret;
 }
 
 int onSurfaceDestroyed (PHandle *ppProcessorHandle)
@@ -178,11 +160,17 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 
-	MyProcessorHandle->m_pSampleTransform->UnInitSample();
-	SafeDelete(MyProcessorHandle->m_pSampleTransform);
+	if (MyProcessorHandle->m_pSampleTransform)
+	{
+		MyProcessorHandle->m_pSampleTransform->UnInitSample();
+		SafeDelete(MyProcessorHandle->m_pSampleTransform);
+	}
 
-	MyProcessorHandle->m_pSampleRender3D->UnInitSample();
-	SafeDelete(MyProcessorHandle->m_pSampleRender3D);
+	if (MyProcessorHandle->m_pSampleRender3D)
+	{
+		MyProcessorHandle->m_pSampleRender3D->UnInitSample();
+		SafeDelete(MyProcessorHandle->m_pSampleRender3D);
+	}
 
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);

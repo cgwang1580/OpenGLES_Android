@@ -2,6 +2,9 @@
 // Created by wcg3031 on 2020/5/22.
 //
 
+#include <detail/type_mat.hpp>
+#include <gtc/matrix_transform.hpp>
+#include "glm.hpp"
 #include "SampleRender3D.h"
 
 #include "LogAndroid.h"
@@ -9,12 +12,24 @@
 #include "MyDefineUtils.h"
 #include "DrawHelper.h"
 
+#define IF_LOGOUT_MAT_INFO	1
+#define LOGOUT_MAT4(_mat4_,_info_)		\
+	if (IF_LOGOUT_MAT_INFO) {	\
+		for (int i = 0; i < 4; ++i) { \
+			LOGD ("%s (%f, %f, %f, %f)", _info_, _mat4_[i][0], _mat4_[i][1], _mat4_[i][2], _mat4_[i][3]); \
+		}\
+	}
+
 SampleRender3D::SampleRender3D()
 {
 	LOGD("SampleRender3D::SampleRender3D");
+	m_VAO = GL_NONE;
+	m_VBO = GL_NONE;
+	m_EBO = GL_NONE;
 	m_VBO_Position = GL_NONE;
 	m_VBO_Normal = GL_NONE;
 	m_VBO_Color = GL_NONE;
+	m_pShaderHelper = nullptr;
 }
 
 SampleRender3D::~SampleRender3D()
@@ -26,7 +41,7 @@ RESULT SampleRender3D::InitSample ()
 {
 	LOGD("SampleRender3D::InitSample");
 	int ret = ERROR_OK;
-	createShader();
+	ret = createShader();
 	CHECK_OK_RETURN(ret);
 	createRectBars();
 	CHECK_OK_RETURN(ret);
@@ -45,17 +60,27 @@ void SampleRender3D::UnInitSample ()
 RESULT SampleRender3D::OnDrawFrame ()
 {
 	LOGD("SampleRender3D::onDrawFrame");
+
+	glm::mat4 modelView = glm::mat4(1.0f);
+	glm::mat4 projection = glm::perspective (glm::radians(45.f), 1.f, 0.1f, 1000.f);
+	LOGOUT_MAT4 (projection, "onDrawFrame projection")
+
 	m_pShaderHelper->use();
+	DrawHelper::CheckGLError("OnDrawFrame use");
 	glBindVertexArray(m_VAO);
-	glDrawElements(GL_TRIANGLES, m_SimpleMesh.faces.size(), GL_UNSIGNED_INT, (void*)0);
+	DrawHelper::CheckGLError("OnDrawFrame glBindVertexArray");
+	//glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+	DrawHelper::CheckGLError("OnDrawFrame glDrawElements");
 	glBindVertexArray(GL_NONE);
+	DrawHelper::CheckGLError("OnDrawFrame glBindVertexArray");
 	return ERROR_OK;
 }
 
 RESULT SampleRender3D::createShader()
 {
 	LOGD("SampleRender3D::createShader");
-	m_pShaderHelper = new ShaderHelper (triangle_vertex_shader, triangle_fragment_shader);
+	m_pShaderHelper = new ShaderHelper (triangle_vertex_shader1, triangle_fragment_shader1);
 	RESULT ret = m_pShaderHelper->getShaderHelperState();
 	LOGD("createShader getShaderHelperState ret = %d", ret);
 	return ret;
@@ -70,50 +95,70 @@ void SampleRender3D::destroyShader()
 RESULT SampleRender3D::creteGLBuffer ()
 {
 	LOGD("SampleRender3D::creteGLBuffer");
+	vector <float> vertex_multi{
+			0.3199f, -0.05f, 0,
+			-0.3199f, 0.05f, 0,
+			0.3199f, 0.05f, 0,
+			-0.3199f, -0.05f, 0
+	};
+	vector<int> index_multi{
+			0, 1, 2,
+			2, 3, 0
+	};
 
-	glGenBuffers(1, &m_VAO);
-	glGenBuffers(1, &m_VBO_Position);
-	glGenBuffers(1, &m_VBO_Normal);
-	glGenBuffers(1, &m_VBO_Color);
+	glGenVertexArrays(1, &m_VAO);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");
+	glGenBuffers(1, &m_VBO);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");
 	glGenBuffers(1, &m_EBO);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");
+	/*glGenBuffers(1, &m_VBO_Position);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");
+	glGenBuffers(1, &m_VBO_Normal);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");
+	glGenBuffers(1, &m_VBO_Color);
+	DrawHelper::CheckGLError("creteGLBuffer glGenBuffers");*/
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Position);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_SimpleMesh.vertices), &m_SimpleMesh.vertices[0], GL_STATIC_DRAW);
-	DrawHelper::CheckGLError("creteGLBuffer glBufferData");
+	bool bStatic = true;
+	long lSize = 0;
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Normal);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_SimpleMesh.normals), &m_SimpleMesh.normals[0], GL_STATIC_DRAW);
-	DrawHelper::CheckGLError("creteGLBuffer glBufferData");
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+	if (bStatic)
+	{
+		lSize = sizeof(float) * vertex_multi.size();
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, lSize, &vertex_multi[0], GL_STATIC_DRAW);
+		DrawHelper::CheckGLError("creteGLBuffer glBufferData");
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Color);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_SimpleMesh.colors), &m_SimpleMesh.colors[0], GL_STATIC_DRAW);
-	DrawHelper::CheckGLError("creteGLBuffer glBufferData");
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+		lSize = sizeof(int) * index_multi.size();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, lSize, &index_multi[0], GL_STATIC_DRAW);
+		DrawHelper::CheckGLError("creteGLBuffer glBufferData");
+	}
+	else
+	{
+		loadBarMesh();
+		lSize = sizeof(float) * m_vertices.size();
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, lSize, &m_vertices[0], GL_STATIC_DRAW);
+		LOGD("creteGLBuffer %p %p %p %p %p %p", &m_vertices[0], &m_vertices[1], &m_vertices[2],
+				&m_vertices[3], &m_vertices[4], &m_vertices[5]);
+		DrawHelper::CheckGLError("creteGLBuffer glBufferData");
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_SimpleMesh.faces), &m_SimpleMesh.faces[0], GL_STATIC_DRAW);
-	DrawHelper::CheckGLError("creteGLBuffer glBufferData");
+		lSize = sizeof(int) * m_Indices.size();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, lSize, &m_Indices[0], GL_STATIC_DRAW);
+		DrawHelper::CheckGLError("creteGLBuffer glBufferData");
+	}
 
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Position);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
-	DrawHelper::CheckGLError("creteGLBuffer glVertexAttribPointer 0");
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	DrawHelper::CheckGLError("creteGLBuffer glVertexAttribPointer");
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Normal);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
-	DrawHelper::CheckGLError("creteGLBuffer glVertexAttribPointer 1");
+	//glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_Color);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
-	DrawHelper::CheckGLError("creteGLBuffer glVertexAttribPointer 2");
-
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	glBindVertexArray(GL_NONE);
 	DrawHelper::CheckGLError("creteGLBuffer glBindVertexArray");
 
@@ -124,21 +169,44 @@ void SampleRender3D::destroyGLBuffer ()
 {
 	LOGD("SampleRender3D::destroyGLBuffer");
 	SafeDeleteGLBuffer (1, &m_VAO);
+	SafeDeleteGLBuffer (1, &m_VBO);
 	SafeDeleteGLBuffer (1, &m_VBO_Position);
 	SafeDeleteGLBuffer (1, &m_VBO_Normal);
 	SafeDeleteGLBuffer (1, &m_VBO_Color);
 	SafeDeleteGLBuffer (1, &m_EBO);
-	m_VAO = m_VBO_Position = m_VBO_Normal = m_VBO_Color = m_EBO = GL_NONE;
+	m_VAO = m_VBO = m_VBO_Position = m_VBO_Normal = m_VBO_Color = m_EBO = GL_NONE;
 }
 
 RESULT SampleRender3D::createRectBars ()
 {
 	LOGD("SampleRender3D::createRectBars");
 	Vector3D<float> bar_center(0.f, 0.f, 0.05f);
-	float bar_radius = 0.12f, bar_height = 0.02f, bar_width = 0.01f;
+	float bar_radius = 0.32f, bar_height = 0.2f, bar_width = 0.1f;
 	int num_bars = 16;
 	generateRecBarsTest(m_SimpleMesh, bar_center, bar_radius, bar_height, bar_width, num_bars);
 	return ERROR_OK;
+}
+
+void SampleRender3D::loadBarMesh ()
+{
+	LOGD("SampleRender3D::loadMesh");
+	long size = m_SimpleMesh.vertices.size();
+	//size = 4;
+	for (int i = 0; i < size; ++i)
+	{
+		m_vertices.push_back(m_SimpleMesh.vertices[i].operator[](0));
+		m_vertices.push_back(m_SimpleMesh.vertices[i].operator[](1));
+		m_vertices.push_back(0);
+	}
+
+	size = m_SimpleMesh.faces.size();
+	//size = 2;
+	for (int i = 0; i < size; ++i)
+	{
+		m_Indices.push_back(m_SimpleMesh.faces[i].operator[](0));
+		m_Indices.push_back(m_SimpleMesh.faces[i].operator[](1));
+		m_Indices.push_back(m_SimpleMesh.faces[i].operator[](2));
+	}
 }
 
 RESULT SampleRender3D::convertVertex ()
@@ -150,16 +218,19 @@ RESULT SampleRender3D::convertVertex ()
 	{
 		glm::vec3 aPosition ((float)(m_SimpleMesh.vertices[i][0]), m_SimpleMesh.vertices[i][1], m_SimpleMesh.vertices[i][2]);
 		tVertex.Position = aPosition;
-		glm::vec3 aNormal (m_SimpleMesh.normals[i][0], m_SimpleMesh.normals[i][1], m_SimpleMesh.normals[i][2]);
+		//glm::vec3 aNormal (m_SimpleMesh.normals[i][0], m_SimpleMesh.normals[i][1], m_SimpleMesh.normals[i][2]);
+		glm::vec3 aNormal (0, 0, 0);
 		tVertex.Normal = aNormal;
+		glm::vec3 aColor (1.0f, 1.0f, 1.0f);
+		tVertex.PointColor = aColor;
 		m_VertexLists.push_back(tVertex);
 	}
 
-	for (auto val : m_SimpleMesh.faces)
+	for (int i = 0; i < m_SimpleMesh.faces.size(); ++i)
 	{
-		m_Indices.push_back(val[0]);
-		m_Indices.push_back(val[1]);
-		m_Indices.push_back(val[2]);
+		m_Indices.push_back(m_SimpleMesh.faces[i][0]);
+		m_Indices.push_back(m_SimpleMesh.faces[i][1]);
+		m_Indices.push_back(m_SimpleMesh.faces[i][2]);
 	}
 
 	return ERROR_OK;

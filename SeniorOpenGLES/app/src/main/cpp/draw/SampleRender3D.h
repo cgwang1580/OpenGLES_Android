@@ -10,11 +10,14 @@
 #include "vec3.hpp"
 #include "barHelper.h"
 
+#define GLES_VERSION_STRING		"#version 300 es\n"
+#define GLES_MEDIUMP_STRING		"precision mediump float;\n"
+
 struct Vertex
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
-	glm::vec3 TexCoord;
+	glm::vec3 PointColor;
 };
 
 class SampleRender3D
@@ -34,6 +37,7 @@ private:
 	void destroyGLBuffer ();
 	RESULT createRectBars ();
 	RESULT convertVertex ();
+	void loadBarMesh ();
 	void generateRecBarsTest(
 			SimpleMesh& mesh,
 			Vector3D<float>& center,
@@ -45,7 +49,9 @@ private:
 
 	SimpleMesh m_SimpleMesh;
 	vector <Vertex> m_VertexLists;
-	vector <unsigned int> m_Indices;
+
+	vector <float> m_vertices;
+	vector <int> m_Indices;
 
 	GLuint m_VAO;
 	GLuint m_VBO;
@@ -55,26 +61,44 @@ private:
 	GLuint m_VBO_Normal;
 	GLuint m_VBO_Color;
 
+	// "layout (location = 1) in vec3 aColor;\n"
 	const char triangle_vertex_shader[MAX_CONTENT] = "#version 300 es\n"
-										  "layout (location = 0) in vec3 aPos;\n"
-										  "layout (location = 1) in vec3 aNorm\n"
-										  "layout (location = 2) in vec3 aColor\n"
-										  "out vec3 oColor\n"
-										  "void main()\n"
-										  "{\n"
-										  "    gl_Position = vec4(aPos, 1.0);\n"
-										  "    oColor = aColor;\n"
-										  "}";
+													 "layout (location = 0) in vec3 aPos;\n"
+													 "void main()\n"
+													 "{\n"
+													 "    gl_Position = vec4(aPos, 1.0);\n"
+													 "}";
 
 	const char triangle_fragment_shader[MAX_CONTENT] = "#version 300 es\n"
-											"precision mediump float;\n"
-											"in vec3 oColor;\n"
-											"out vec4 FragColor;\n"
-											"\n"
-											"void main()\n"
-											"{\n"
-											"    FragColor = (oColor, 1.0);\n"
-											"}";
+													   "precision mediump float;\n"
+													   "out vec4 FragColor;\n"
+													   "\n"
+													   "void main()\n"
+													   "{\n"
+													   "    FragColor = vec4(1.0f, 0.0f, 0.2f, 1.0f);\n"
+													   "}";
+
+	const char *triangle_vertex_shader1 =
+			GLES_VERSION_STRING
+			R"(
+layout (location = 0) in vec3 aPos;
+void main()
+{
+	gl_Position = vec4(aPos, 1.0);
+}
+)";
+
+	const char *triangle_fragment_shader1 =
+			GLES_VERSION_STRING
+			GLES_MEDIUMP_STRING
+			R"(
+out vec4 FragColor;
+void main()
+{
+	FragColor = vec4(1.0f, 0.0f, 0.2f, 1.0f);
+}
+)";
+
 };
 
 
