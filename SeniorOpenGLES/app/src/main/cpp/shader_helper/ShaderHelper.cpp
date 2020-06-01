@@ -1,4 +1,5 @@
 #include <common.h>
+#include "ext.hpp"
 #include "LogAndroid.h"
 #include "ShaderHelper.h"
 
@@ -82,8 +83,7 @@ void ShaderHelper::setVec3f(const string &name, float value1, float value2, floa
 	glUniform3f(glGetUniformLocation(m_nProgramId, name.c_str()), value1, value2, value3);
 }
 
-/*
-void Shader_Helper::setMat4(const string &name, const glm::mat4 &mat) const
+void ShaderHelper::setMat4(const string &name, const glm::mat4 &mat) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(progreamId, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
-}*/
+	glUniformMatrix4fv(glGetUniformLocation(m_nProgramId, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+}

@@ -11,6 +11,7 @@
 #include <AHardwareBufferHelper.h>
 #include <SampleTransform.h>
 #include <SampleRender3D.h>
+#include <SampleDrawFBO.h>
 
 using namespace std;
 
@@ -44,6 +45,7 @@ typedef struct __tag_processor_handle
 	AHardwareBufferHelper *pHardwareBufferHelper;
 	SampleTransform *m_pSampleTransform;
 	SampleRender3D *m_pSampleRender3D;
+	SampleDrawFBO * m_pSampleDrawFBO;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

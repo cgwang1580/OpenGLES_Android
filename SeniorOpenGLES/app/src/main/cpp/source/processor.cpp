@@ -33,9 +33,9 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	memset(MyProcessorHandle, 0, sizeof(ProcessorHandle));
 
 	/*int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);*/
 
-	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
+	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
 
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBO, fbo_vertex_shader, fbo_fragment_shader);
@@ -44,8 +44,8 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
 	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
 
-	*//*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*//*
+	/*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
+	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*/
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
@@ -55,7 +55,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo);
 	memset (MyProcessorHandle->lpMyImageInfo, 0 , sizeof(MyImageInfo));
 
-	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
+	/*if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo_YUV);
 	}
@@ -63,10 +63,10 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo_YUV);
 	memset(MyProcessorHandle->lpMyImageInfo_YUV, 0, sizeof(MyImageInfo));
 
-	*//*if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
+	if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
 	{
 		MyProcessorHandle->pHardwareBufferHelper = new AHardwareBufferHelper();
-	}*//*
+	}
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -81,6 +81,12 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	{
 		MyProcessorHandle->m_pSampleRender3D = new SampleRender3D ();
 		MyProcessorHandle->m_pSampleRender3D->InitSample();
+	}
+
+	if (nullptr == MyProcessorHandle->m_pSampleDrawFBO)
+	{
+		MyProcessorHandle->m_pSampleDrawFBO = new SampleDrawFBO ();
+		MyProcessorHandle->m_pSampleDrawFBO->InitSample();
 	}
 
 	return ERROR_OK;
@@ -119,7 +125,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::SaveImageToYuv(MyProcessorHandle->lpMyImageInfo_YUV, sPath);*/
 
 	}
-	int nDrawType = 5;
+	int nDrawType = 6;
 	switch (nDrawType)
 	{
 		case 0:
@@ -144,6 +150,9 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			break;
 		case 5:
 			ret = MyProcessorHandle->m_pSampleRender3D->OnDrawFrame();
+			break;
+		case 6:
+			ret = MyProcessorHandle->m_pSampleDrawFBO->OnDrawFrame();
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
@@ -170,6 +179,12 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	{
 		MyProcessorHandle->m_pSampleRender3D->UnInitSample();
 		SafeDelete(MyProcessorHandle->m_pSampleRender3D);
+	}
+
+	if (MyProcessorHandle->m_pSampleDrawFBO)
+	{
+		MyProcessorHandle->m_pSampleDrawFBO->UnInitSample();
+		SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
 	}
 
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);

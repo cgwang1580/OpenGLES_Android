@@ -11,7 +11,19 @@
 #include <string>
 #include "OpenImageHelper.h"
 
+#define GLES_VERSION_STRING		"#version 300 es\n"
+#define GLES_MEDIUM_STRING		"precision mediump float;\n"
+#define GLES_HIGHP_STRING		"precision highp float;\n"
+
 #define SafeDeleteGLBuffer(_num_, _pVal_)	if (_pVal_) {glDeleteBuffers ((_num_), (_pVal_));}
+
+#define IF_LOGOUT_MAT_INFO	1
+#define LOGOUT_MAT4(_mat4_,_info_)		\
+	if (IF_LOGOUT_MAT_INFO) {	\
+		for (int i = 0; i < 4; ++i) { \
+			LOGD ("%s (%f, %f, %f, %f)", _info_, _mat4_[i][0], _mat4_[i][1], _mat4_[i][2], _mat4_[i][3]); \
+		}\
+	}
 
 class DrawHelper
 {

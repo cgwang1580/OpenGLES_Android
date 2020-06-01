@@ -111,10 +111,10 @@ int drawTexture (ShaderHelper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 	CHECK_NULL_INPUT(lpMyImageInfo)
 
 	float vertex_texture [] {
-		1.0f, -0.5, 0,		1.0f, 0, 0,      	1.0f, 1.0f,
-		1.0f, 0.5f, 0,		0, 1.0f, 0,   		1.0f, 0,
-		-1.0f, 0.5f, 0,		0, 0, 1.0f,  		0, 0,
-		-1.0, -0.5, 0,		1.0f, 1.0f, 0,     	0, 1.0f
+		1.0f, -1.f, 0,		1.0f, 0, 0,      	1.0f, 1.0f,
+		1.0f, 1.f, 0,		0, 1.0f, 0,   		0, 1.0f,
+		-1.0f, 1.f, 0,		0, 0, 1.0f,  		0, 0,
+		-1.0f, -1.f, 0,		1.0f, 1.0f, 0,     	1.0f, 0
 	};
 
 	int vertex_index [] {
@@ -159,6 +159,12 @@ int drawTexture (ShaderHelper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 	OpenImageHelper::FreeMyImageInfo(lpMyImageInfo);
 
 	pShaderHelper->use();
+
+	glm::mat4 MVP = glm::mat4(1.0f);
+	MVP = glm::rotate (MVP, glm::radians(270.f), glm::vec3 (0.f, 0.f, 1.f));
+
+	pShaderHelper->setMat4("MVP", MVP);
+
 	pShaderHelper->setInt("texture1", 0);
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture1);

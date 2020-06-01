@@ -9,9 +9,7 @@
 #include <MyDefineUtils.h>
 #include "vec3.hpp"
 #include "barHelper.h"
-
-#define GLES_VERSION_STRING		"#version 300 es\n"
-#define GLES_MEDIUMP_STRING		"precision mediump float;\n"
+#include "DrawHelper.h"
 
 struct Vertex
 {
@@ -90,7 +88,7 @@ void main()
 
 	const char *triangle_fragment_shader1 =
 			GLES_VERSION_STRING
-			GLES_MEDIUMP_STRING
+			GLES_MEDIUM_STRING
 			R"(
 out vec4 FragColor;
 void main()

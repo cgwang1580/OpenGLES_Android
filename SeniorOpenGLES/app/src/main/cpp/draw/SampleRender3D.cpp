@@ -3,22 +3,11 @@
 //
 
 #include <detail/type_mat.hpp>
-#include <gtc/matrix_transform.hpp>
-#include "glm.hpp"
 #include "SampleRender3D.h"
 
 #include "LogAndroid.h"
 #include "common.h"
 #include "MyDefineUtils.h"
-#include "DrawHelper.h"
-
-#define IF_LOGOUT_MAT_INFO	1
-#define LOGOUT_MAT4(_mat4_,_info_)		\
-	if (IF_LOGOUT_MAT_INFO) {	\
-		for (int i = 0; i < 4; ++i) { \
-			LOGD ("%s (%f, %f, %f, %f)", _info_, _mat4_[i][0], _mat4_[i][1], _mat4_[i][2], _mat4_[i][3]); \
-		}\
-	}
 
 SampleRender3D::SampleRender3D()
 {
@@ -40,7 +29,7 @@ SampleRender3D::~SampleRender3D()
 RESULT SampleRender3D::InitSample ()
 {
 	LOGD("SampleRender3D::InitSample");
-	int ret = ERROR_OK;
+	RESULT ret = ERROR_OK;
 	ret = createShader();
 	CHECK_OK_RETURN(ret);
 	createRectBars();

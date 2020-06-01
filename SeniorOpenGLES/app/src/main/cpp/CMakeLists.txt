@@ -53,6 +53,7 @@ list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/AHardwareBufferHelper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleTransform.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleRender3D.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleDrawFBO.cpp
         )
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections")
