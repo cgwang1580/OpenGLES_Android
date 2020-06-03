@@ -55,6 +55,13 @@ RESULT SampleDrawFBO::OnDrawFrame ()
 	glBindVertexArray(GL_NONE);
 	DrawHelper::CheckGLError("OnDrawFrame glBindVertexArray");
 
+	GLint viewport[4]{0};
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	SRECT sRect {0};
+	sRect.left = viewport[0];sRect.top = viewport[1];sRect.right = viewport[2];sRect.bottom = viewport[3];
+	char sPath[MAX_PATH] = "/sdcard/OpenGLESTest/testDrawFBO.png";
+	DrawHelper::SaveRenderImage(sRect, GL_RGB, sPath);
+
 	// draw FBO texture to screen
 	m_pShaderHelperFBO->use();
 	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
@@ -123,14 +130,14 @@ RESULT SampleDrawFBO::creteGLBuffer ()
 	}
 
 	vector <float> vertex_multi{
-			0.3199f, -0.05f, 0,
-			-0.3199f, 0.05f, 0,
-			0.3199f, 0.05f, 0,
-			-0.3199f, -0.05f, 0
+			0.3199f, -0.5f, 0,
+			-0.3199f, 0.5f, 0,
+			0.3199f, 0.5f, 0,
+			-0.3199f, -0.5f, 0
 	};
 	vector<int> index_multi{
-			0, 1, 2,
-			2, 3, 0
+			0, 1, 3,
+			0, 2, 3
 	};
 
 	glGenVertexArrays(1, &m_VAO);
@@ -175,9 +182,6 @@ RESULT SampleDrawFBO::creteGLBuffer ()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	DrawHelper::CheckGLError("creteGLBuffer glVertexAttribPointer");
-
-	//glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
 	glBindVertexArray(GL_NONE);
 	DrawHelper::CheckGLError("creteGLBuffer glBindVertexArray");
