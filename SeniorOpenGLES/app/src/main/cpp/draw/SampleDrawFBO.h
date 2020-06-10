@@ -9,7 +9,7 @@
 #include "DrawHelper.h"
 #include <vector>
 
-using namespace std;
+//using namespace std;
 
 class SampleDrawFBO
 {
@@ -27,8 +27,8 @@ private:
 	RESULT creteGLBuffer ();
 	void destroyGLBuffer ();
 
-	vector <float> m_vertices;
-	vector <int> m_Indices;
+	std::vector <float> m_vertices;
+	std::vector <int> m_Indices;
 
 	GLuint m_VAO;
 	GLuint m_VBO;

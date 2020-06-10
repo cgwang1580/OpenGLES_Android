@@ -2,8 +2,7 @@
 // Created by wcg3031 on 2020/4/1.
 //
 
-#ifndef HELLOTRIANGLE_LOGANDROID_H
-#define HELLOTRIANGLE_LOGANDROID_H
+#pragma once
 
 #include "android/log.h"
 #include "sys/time.h"
@@ -80,4 +79,3 @@ private:
 };
 
 
-#endif //HELLOTRIANGLE_LOGANDROID_H

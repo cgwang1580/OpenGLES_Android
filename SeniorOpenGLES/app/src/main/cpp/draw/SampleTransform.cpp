@@ -2,9 +2,9 @@
 // Created by wcg3031 on 2020/5/21.
 //
 
-#include <LogAndroid.h>
-#include <common.h>
-#include <MyDefineUtils.h>
+#include "LogAndroid.h"
+#include "common.h"
+#include "MyDefineUtils.h"
 #include <GLES3/gl3.h>
 #include "SampleTransform.h"
 #include "DrawHelper.h"

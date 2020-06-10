@@ -24,7 +24,7 @@ const GLfloat vTexCoors[] = {
 
 const GLuint indices[] = { 0, 1, 2, 1, 3, 2 };
 
-static const string hardware_vertex_shader = "#version 300 es\n"
+static const std::string hardware_vertex_shader = "#version 300 es\n"
 											 "\n"
 											 "layout (location = 0) in vec3 aPos;\n"
 											 "layout (location = 1) in vec2 aTexCoords;\n"
@@ -37,7 +37,7 @@ static const string hardware_vertex_shader = "#version 300 es\n"
 											 "    TexCoords = aTexCoords;\n"
 											 "}";
 
-static const string hardware_fragment_shader = "#version 300 es\n"
+static const std::string hardware_fragment_shader = "#version 300 es\n"
 											   "#extension GL_EXT_YUV_target: require\n"
 											   "\n"
 											   "precision mediump float;\n"

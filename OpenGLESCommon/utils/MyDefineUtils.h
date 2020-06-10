@@ -2,8 +2,7 @@
 // Created by wcg3031 on 2020/4/1.
 //
 
-#ifndef HELLOTRIANGLE_MYDEFINEUTILS_H
-#define HELLOTRIANGLE_MYDEFINEUTILS_H
+#pragma once
 
 #include "common.h"
 
@@ -27,4 +26,3 @@
 
 #define CHECK_OK_RETURN(_ret_)	if (ERROR_OK != (_ret_)) return _ret_;
 
-#endif //HELLOTRIANGLE_MYDEFINEUTILS_H

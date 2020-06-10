@@ -2,7 +2,7 @@
 // Created by wcg3031 on 2020/6/4.
 //
 
-#include <LogAndroid.h>
+#include "LogAndroid.h"
 #include "SampleRender3DMesh.h"
 
 #define ModelPath "/sdcard/OpenGLESTest/nanosuit/backpack.obj"
@@ -36,7 +36,7 @@ RESULT SampleRender3DMesh::OnDrawFrame ()
 	m_pShaderHelper->setMat4("MVP", MVP);
 
 	if (m_pModel)
-		m_pModel->Draw(m_pShaderHelper);
+		//m_pModel->Draw(m_pShaderHelper);
 
 	glDisable(GL_DEPTH_TEST);
 	return ERROR_OK;

@@ -2,18 +2,12 @@
 // Created by wcg3031 on 2020/4/21.
 //
 
-#ifndef SENIOROPENGLES_DRAWHELPER_H
-#define SENIOROPENGLES_DRAWHELPER_H
+#pragma once
 
 #include "GLES3/gl3.h"
 #include "GLES2/gl2ext.h"
 #include "EGL/egl.h"
-#include <string>
 #include "OpenImageHelper.h"
-
-#define GLES_VERSION_STRING		"#version 300 es\n"
-#define GLES_MEDIUM_STRING		"precision mediump float;\n"
-#define GLES_HIGHP_STRING		"precision highp float;\n"
 
 #define SafeDeleteGLBuffer(_num_, _pVal_)	if (_pVal_) {glDeleteBuffers ((_num_), (_pVal_));}
 
@@ -96,4 +90,3 @@ public:
 	}
 };
 
-#endif //SENIOROPENGLES_DRAWHELPER_H

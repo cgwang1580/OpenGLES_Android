@@ -5,8 +5,9 @@
 #pragma once
 
 #include "SampleBase.h"
-#include "Mesh.h"
 #include "Model.h"
+#include "common.h"
+#include "ShaderHelper.h"
 
 class SampleRender3DMesh : public SampleBase
 {

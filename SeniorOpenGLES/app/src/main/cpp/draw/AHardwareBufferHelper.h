@@ -2,8 +2,7 @@
 // Created by wcg3031 on 2020/5/7.
 //
 
-#ifndef SENIOROPENGLES_AHARDWAREBUFFERHELPER_H
-#define SENIOROPENGLES_AHARDWAREBUFFERHELPER_H
+#pragma once
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -11,7 +10,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3ext.h>
 #include <android/hardware_buffer.h>
-#include <ShaderHelper.h>
+#include "ShaderHelper.h"
 #include "MyImageInfo.h"
 
 /**
@@ -68,4 +67,3 @@ public:
 	int getRenderNum ();
 };
 
-#endif //SENIOROPENGLES_AHARDWAREBUFFERHELPER_H

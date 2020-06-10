@@ -2,7 +2,7 @@
 // Created by wcg3031 on 2020/6/4.
 //
 
-#include <LogAndroid.h>
+#include "LogAndroid.h"
 #include "SampleBase.h"
 #include "DrawHelper.h"
 

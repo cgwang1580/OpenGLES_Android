@@ -6,9 +6,9 @@
 #include "LogAndroid.h"
 #include "GLES3/gl3.h"
 #include <string>
-#include <MyDefineUtils.h>
-#include <OpenImageHelper.h>
-#include <SampleRender3D.h>
+#include "MyDefineUtils.h"
+#include "OpenImageHelper.h"
+#include "SampleRender3D.h"
 #include "shader_content.h"
 #include "unistd.h"
 #include "draw_utils.h"
@@ -89,10 +89,10 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 		MyProcessorHandle->m_pSampleDrawFBO->InitSample();
 	}
 
-	if (!MyProcessorHandle->m_pSampleRender3DMesh)
+	/*if (!MyProcessorHandle->m_pSampleRender3DMesh)
 	{
 		MyProcessorHandle->m_pSampleRender3DMesh = new SampleRender3DMesh ();
-	}
+	}*/
 
 	return ERROR_OK;
 }
@@ -160,7 +160,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			ret = MyProcessorHandle->m_pSampleDrawFBO->OnDrawFrame();
 			break;
 		case eDraw_Render3DMesh:
-			ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
+			//ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
@@ -195,7 +195,7 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 		SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
 	}
 
-	SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
+	//SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
 
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);

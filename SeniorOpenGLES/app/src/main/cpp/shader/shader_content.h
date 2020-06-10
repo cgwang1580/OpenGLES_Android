@@ -2,21 +2,20 @@
 // Created by wcg3031 on 2020/4/2.
 //
 
-#ifndef HELLOTRIANGLE_SHADER_CONTENT_H
-#define HELLOTRIANGLE_SHADER_CONTENT_H
+#pragma once
 
 #include "string"
 
-using namespace std;
+//using namespace std;
 
-static const string triangle_vertex_shader = "#version 300 es\n"
+static const std::string triangle_vertex_shader = "#version 300 es\n"
 									 "layout (location = 0) in vec3 aPos;\n"
 									 "void main()\n"
 									 "{\n"
 									 "    gl_Position = vec4(aPos, 1.0);\n"
 									 "}";
 
-static const string triangle_fragment_shader = "#version 300 es\n"
+static const std::string triangle_fragment_shader = "#version 300 es\n"
 											   "precision mediump float;\n"
 											   "uniform float g_color;\n"
 											   "out vec4 FragColor;\n"
@@ -28,7 +27,7 @@ static const string triangle_fragment_shader = "#version 300 es\n"
 
 
 
-static const string texture_vertex_shader = "#version 300 es\n"
+static const std::string texture_vertex_shader = "#version 300 es\n"
 											"\n"
 											"layout (location = 0) in vec3 aPos;\n"
 											"layout (location = 1) in vec3 aColor;\n"
@@ -44,7 +43,7 @@ static const string texture_vertex_shader = "#version 300 es\n"
 											"    TexColor = aColor;\n"
 											"}";
 
-static const string texture_fragment_shader = "#version 300 es\n"
+static const std::string texture_fragment_shader = "#version 300 es\n"
 											  "precision mediump float;\n"
 											  "\n"
 											  "out vec4 FragColor;\n"
@@ -58,7 +57,7 @@ static const string texture_fragment_shader = "#version 300 es\n"
 											  "}";
 
 
-static const string fbo_vertex_shader = "#version 300 es\n"
+static const std::string fbo_vertex_shader = "#version 300 es\n"
 										"\n"
 										"layout (location = 0) in vec3 aPos;\n"
 										"layout (location = 1) in vec2 aTexCoords;\n"
@@ -71,7 +70,7 @@ static const string fbo_vertex_shader = "#version 300 es\n"
 										"    TexCoords = aTexCoords;\n"
 										"}";
 
-static const string fbo_fragment_shader = "#version 300 es\n"
+static const std::string fbo_fragment_shader = "#version 300 es\n"
 										  "precision mediump float;\n"
 										  "\n"
 										  "out vec4 FragColor;\n"
@@ -86,7 +85,7 @@ static const string fbo_fragment_shader = "#version 300 es\n"
 										  "    FragColor = vec4 (vec3(grayValue), tempColor.a);\n"
 										  "}";
 
-static const string fbo_normal_fragment_shader = "#version 300 es\n"
+static const std::string fbo_normal_fragment_shader = "#version 300 es\n"
 												 "precision mediump float;\n"
 												 "out vec4 FragColor;\n"
 												 "in vec2 TexCoords;\n"
@@ -96,7 +95,7 @@ static const string fbo_normal_fragment_shader = "#version 300 es\n"
 												 "    FragColor = texture (texture1, TexCoords) * vec4 (1.0);\n"
 												 "}";
 
-static const string hardware_normal_fragment_shader = "#version 300 es\n"
+static const std::string hardware_normal_fragment_shader = "#version 300 es\n"
 												 "precision mediump float;\n"
 												 "out vec4 FragColor;\n"
 												 "in vec2 TexCoords;\n"
@@ -106,4 +105,3 @@ static const string hardware_normal_fragment_shader = "#version 300 es\n"
 												 "    FragColor = texture (texture1, TexCoords) * vec4 (1.0);\n"
 												 "}";
 
-#endif //HELLOTRIANGLE_SHADER_CONTENT_H

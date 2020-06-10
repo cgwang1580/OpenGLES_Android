@@ -7,16 +7,16 @@
 #include <vector>
 #include <string>
 
-using namespace std;
+//using namespace std;
 
 class MyFileHelper
 {
 
 public:
-	static vector <string> StringSplit (const string str, const char cSeparator1, const char cSeparator2)
+	static std::vector <std::string> StringSplit (const std::string str, const char cSeparator1, const char cSeparator2)
 	{
-		vector<string> strResult;
-		string sTemp = "";
+		std::vector<std::string> strResult;
+		std::string sTemp = "";
 		bool bWithSep = false;
 		for (auto val : str)
 		{

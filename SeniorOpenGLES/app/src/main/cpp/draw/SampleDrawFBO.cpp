@@ -129,13 +129,13 @@ RESULT SampleDrawFBO::creteGLBuffer ()
 		return ERROR_GL_STATE;
 	}
 
-	vector <float> vertex_multi{
+	std::vector <float> vertex_multi{
 			0.3199f, -0.5f, 0,
 			-0.3199f, 0.5f, 0,
 			0.3199f, 0.5f, 0,
 			-0.3199f, -0.5f, 0
 	};
-	vector<int> index_multi{
+	std::vector<int> index_multi{
 			0, 1, 3,
 			0, 2, 3
 	};

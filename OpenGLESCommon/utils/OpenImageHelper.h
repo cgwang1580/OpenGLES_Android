@@ -2,8 +2,7 @@
 // Created by wcg3031 on 2020/4/3.
 //
 
-#ifndef HELLOTRIANGLE_OPENIMAGEHELPER_H
-#define HELLOTRIANGLE_OPENIMAGEHELPER_H
+#pragma once
 
 #include "png.h"
 #include "LogAndroid.h"
@@ -268,7 +267,7 @@ public:
 		do
 		{
 			std::string filePath = sPath;
-			vector<string> strTemp0 = MyFileHelper::StringSplit (filePath, '.', '.');
+			std::vector<std::string> strTemp0 = MyFileHelper::StringSplit (filePath, '.', '.');
 			for (auto val:strTemp0)
 				LOGD("LoadYuvFromFile %s", val.c_str());
 			if (strTemp0.size() != 2)
@@ -281,7 +280,7 @@ public:
 			GetImageFormatByExt(strTemp0[1], lpMyImageInfo->format);
 			LOGD("LoadYuvFromFile GetImageFormatByExt nFormat = %d", lpMyImageInfo->format);
 
-			vector<string> strTemp1 = MyFileHelper::StringSplit(strTemp0[0], 'x', 'X');
+			std::vector<std::string> strTemp1 = MyFileHelper::StringSplit(strTemp0[0], 'x', 'X');
 			if (strTemp1.size() != 2)
 			{
 				LOGE("LoadYuvFromFile sPath is not supported   strTemp1");
@@ -290,8 +289,8 @@ public:
 			}
 			lpMyImageInfo->height = atoi(strTemp1[1].c_str());
 			LOGD("LoadYuvFromFile height = %d", lpMyImageInfo->height);
-			
-			vector<string> strTemp2 = MyFileHelper::StringSplit(strTemp1[0], '_', '_');
+
+			std::vector<std::string> strTemp2 = MyFileHelper::StringSplit(strTemp1[0], '_', '_');
 			if (0 == strTemp2.size())
 			{
 				LOGE("LoadYuvFromFile sPath is not supported   strTemp2");
@@ -353,4 +352,3 @@ public:
 
 };
 
-#endif //HELLOTRIANGLE_OPENIMAGEHELPER_H

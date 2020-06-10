@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <ShaderHelper.h>
-#include <common.h>
-#include <MyDefineUtils.h>
+#include "ShaderHelper.h"
+#include "common.h"
+#include "MyDefineUtils.h"
 
 class SampleTransform
 {

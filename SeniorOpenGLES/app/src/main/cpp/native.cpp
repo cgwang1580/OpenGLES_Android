@@ -1,6 +1,6 @@
 #include <jni.h>
 #include <string>
-#include "header_out/processor.h"
+#include "processor.h"
 
 PHandle pProcessorHandle = NULL;
 

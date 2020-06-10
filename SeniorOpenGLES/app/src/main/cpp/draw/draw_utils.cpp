@@ -11,7 +11,7 @@
 #include "OpenImageHelper.h"
 #include "DrawHelper.h"
 
-int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader)
+int CreateShaderHelper (LPShaderSet pShaderSet, const std::string vShader, const std::string fShader)
 {
 	LOGD("CreateShaderHelper");
 	CHECK_NULL_INPUT(pShaderSet)

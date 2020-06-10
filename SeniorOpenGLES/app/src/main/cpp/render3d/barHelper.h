@@ -2,8 +2,7 @@
 // Created by wcg3031 on 2020/5/25.
 //
 
-#ifndef _BAR_HELPER_H_
-#define _BAR_HELPER_H_
+#pragma once
 
 #include <vector>
 #include <fstream>
@@ -65,6 +64,13 @@ public:
 		return *this;
 	}
 
+	Vector3D<T> operator*(T s)
+	{
+		Vector3D<T> res;
+		for (size_t i = 0; i < 3; i++) res[i] = data[i] * s;
+		return res;
+	}
+
 private:
 	T data[3];
 };
@@ -85,12 +91,12 @@ public:
 		bool have_color = (colors.size() == vertices.size());
 		bool have_normals = (normals.size() == vertices.size());
 		fprintf(fp, "ply\nformat binary_little_endian 1.0\ncomment file created by arc3d!\n");
-		fprintf(fp, "element vertex %d\n", v.size());
+		fprintf(fp, "element vertex %ld\n", v.size());
 		fprintf(fp, "property float x\nproperty float y\nproperty float z\n");
 		if (have_color)fprintf(fp, "property uchar red\nproperty uchar green\nproperty uchar blue\n");
 		if (have_normals) fprintf(fp, "property float nx\nproperty float ny\nproperty float nz\n");
 		if (!faces.empty()) {
-			fprintf(fp, "element face %d\n", faces.size());
+			fprintf(fp, "element face %ld\n", faces.size());
 			fprintf(fp, "property list int int vertex_indices\n");
 		}
 		fprintf(fp, "end_header\n");
@@ -147,5 +153,3 @@ public:
 		mesh.faces.push_back(Vector3D<int>(4 * k + 2, 4 * k + 3, 4 * k));
 	}
 }*/
-
-#endif

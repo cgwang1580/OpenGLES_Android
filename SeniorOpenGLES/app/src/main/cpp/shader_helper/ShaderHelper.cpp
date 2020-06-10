@@ -1,4 +1,4 @@
-#include <common.h>
+#include "common.h"
 #include "glm/ext.hpp"
 #include "LogAndroid.h"
 #include "ShaderHelper.h"
@@ -68,24 +68,24 @@ void ShaderHelper::use() {
 	glUseProgram(m_nProgramId);
 }
 
-void ShaderHelper::setBool (const string &name, bool value) const{
+void ShaderHelper::setBool (const std::string &name, bool value) const{
 	glUniform1i(glGetUniformLocation(m_nProgramId, name.c_str()), value);
 }
 
-void ShaderHelper::setInt(const string &name, int value) const {
+void ShaderHelper::setInt(const std::string &name, int value) const {
 	glUniform1i(glGetUniformLocation(m_nProgramId, name.c_str()), value);
 }
 
-void ShaderHelper::setFloat(const string &name, float value) const {
+void ShaderHelper::setFloat(const std::string &name, float value) const {
 	glUniform1f(glGetUniformLocation(m_nProgramId, name.c_str()), value);
 }
 
-void ShaderHelper::setVec3f(const string &name, float value1, float value2, float value3) const
+void ShaderHelper::setVec3f(const std::string &name, float value1, float value2, float value3) const
 {
 	glUniform3f(glGetUniformLocation(m_nProgramId, name.c_str()), value1, value2, value3);
 }
 
-void ShaderHelper::setMat4(const string &name, const glm::mat4 &mat) const
+void ShaderHelper::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(m_nProgramId, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 }

@@ -2,13 +2,12 @@
 // Created by wcg3031 on 2020/4/2.
 //
 
-#ifndef HELLOTRIANGLE_DRAW_UTILS_H
-#define HELLOTRIANGLE_DRAW_UTILS_H
+#pragma once
 
 #include "ShaderHelper.h"
 #include "processor_inner.h"
 
-int CreateShaderHelper (LPShaderSet pShaderSet, const string vShader, const string fShader);
+int CreateShaderHelper (LPShaderSet pShaderSet, const std::string vShader, const std::string fShader);
 
 int drawTriangle (ShaderHelper *pShaderHelper);
 
@@ -20,4 +19,3 @@ int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHard
 
 int drawByHardwareBuffer2 (const LPMyImageInfo lpMyImageInfo);
 
-#endif //HELLOTRIANGLE_DRAW_UTILS_H

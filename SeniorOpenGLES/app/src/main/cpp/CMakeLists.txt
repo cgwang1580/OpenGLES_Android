@@ -38,6 +38,7 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/shader
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/render3d
+        ${CMAKE_CURRENT_SOURCE_DIR}/model
 )
 
 link_directories(

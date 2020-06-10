@@ -6,6 +6,7 @@
 #include "LogAndroid.h"
 #include "common.h"
 #include "MyDefineUtils.h"
+#include "DrawHelper.h"
 
 SampleRender3D::SampleRender3D()
 {
@@ -82,13 +83,13 @@ void SampleRender3D::destroyShader()
 RESULT SampleRender3D::creteGLBuffer ()
 {
 	LOGD("SampleRender3D::creteGLBuffer");
-	vector <float> vertex_multi{
+	std::vector <float> vertex_multi{
 			0.3199f, -0.05f, 0,
 			-0.3199f, 0.05f, 0,
 			0.3199f, 0.05f, 0,
 			-0.3199f, -0.05f, 0
 	};
-	vector<int> index_multi{
+	std::vector<int> index_multi{
 			0, 1, 2,
 			2, 3, 0
 	};
@@ -171,6 +172,8 @@ RESULT SampleRender3D::createRectBars ()
 	float bar_radius = 0.32f, bar_height = 0.2f, bar_width = 0.1f;
 	int num_bars = 16;
 	generateRecBarsTest(m_SimpleMesh, bar_center, bar_radius, bar_height, bar_width, num_bars);
+	float torus_radius = 1.f, tube_radius = 0.5f;
+	generateTorus(m_SimpleMeshTorus, bar_center, torus_radius, tube_radius);
 	return ERROR_OK;
 }
 
@@ -257,5 +260,46 @@ void SampleRender3D::generateRecBarsTest(
 		}
 		mesh.faces.push_back(Vector3D<int>(4 * k, 4 * k + 1, 4 * k + 2));
 		mesh.faces.push_back(Vector3D<int>(4 * k + 2, 4 * k + 3, 4 * k));
+	}
+}
+
+void SampleRender3D::generateTorus(SimpleMesh& mesh, Vector3D<float>& center, float torus_radius, float tube_radius)
+{
+	LOGD("SampleRender3D::generateTorus center (%f, %f, %f), torus_radius = %f, tube_radius = %f",
+			center[0], center[1], center[2], torus_radius, tube_radius);
+
+	const int radial_resolution = 20;
+	const int tubular_resolution = 20;
+
+	mesh.vertices.resize(radial_resolution * tubular_resolution);
+	mesh.colors.resize(radial_resolution * tubular_resolution);
+	mesh.faces.resize(2 * radial_resolution * tubular_resolution);
+	auto vert_idx = [&](int uidx, int vidx) {
+		return uidx * tubular_resolution + vidx;
+	};
+	double u_step = 2 * M_PI / double(radial_resolution);
+	double v_step = 2 * M_PI / double(tubular_resolution);
+	for (int uidx = 0; uidx < radial_resolution; ++uidx) {
+		double u = uidx * u_step;
+		Vector3D<float> w(cos(u), sin(u), 0);
+		for (int vidx = 0; vidx < tubular_resolution; ++vidx) {
+			double v = vidx * v_step;
+			mesh.vertices[vert_idx(uidx, vidx)] = center + w * torus_radius + w * tube_radius * cos(v)
+					+ Vector3D<float>(0, 0, tube_radius * sin(v));
+
+			mesh.colors[vert_idx(uidx, vidx)] = Vector3D<unsigned char>(0, 0, 255);
+
+			int tri_idx = (uidx * tubular_resolution + vidx) * 2;
+			mesh.faces[tri_idx + 0] = Vector3D<int>(
+					vert_idx((uidx + 1) % radial_resolution, vidx),
+					vert_idx((uidx + 1) % radial_resolution,
+							 (vidx + 1) % tubular_resolution),
+					vert_idx(uidx, vidx));
+			mesh.faces[tri_idx + 1] = Vector3D<int>(
+					vert_idx(uidx, vidx),
+					vert_idx((uidx + 1) % radial_resolution,
+							 (vidx + 1) % tubular_resolution),
+					vert_idx(uidx, (vidx + 1) % tubular_resolution));
+		}
 	}
 }

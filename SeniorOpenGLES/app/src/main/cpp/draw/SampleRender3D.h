@@ -4,11 +4,10 @@
 
 #pragma once
 
-#include <ShaderHelper.h>
-#include <common.h>
-#include <MyDefineUtils.h>
+#include "ShaderHelper.h"
+#include "common.h"
+#include "MyDefineUtils.h"
 #include "barHelper.h"
-#include "DrawHelper.h"
 
 #include "glm/vec3.hpp"
 #include "glm/glm.hpp"
@@ -48,11 +47,14 @@ private:
 			int num_bars,
 			Vector3D<unsigned char> default_color = Vector3D<unsigned char>(255, 0, 0));
 
-	SimpleMesh m_SimpleMesh;
-	vector <Vertex1> m_VertexLists;
+	void generateTorus(SimpleMesh& mesh, Vector3D<float>& center, float torus_radius, float tube_radius);
 
-	vector <float> m_vertices;
-	vector <int> m_Indices;
+	SimpleMesh m_SimpleMesh;
+	SimpleMesh m_SimpleMeshTorus;
+	std::vector <Vertex1> m_VertexLists;
+
+	std::vector <float> m_vertices;
+	std::vector <int> m_Indices;
 
 	GLuint m_VAO;
 	GLuint m_VBO;
