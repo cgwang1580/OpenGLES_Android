@@ -12,6 +12,7 @@
 #include <SampleTransform.h>
 #include <SampleRender3D.h>
 #include <SampleDrawFBO.h>
+#include <SampleRender3DMesh.h>
 
 using namespace std;
 
@@ -30,6 +31,18 @@ typedef struct __shader_set_
 	ShaderHelper *pShaderHelper;
 }ShaderSet, *LPShaderSet;
 
+typedef enum
+{
+	eDraw_Triangle = 0,
+	eDraw_SimpleTexture,
+	eDraw_TextureFbo,
+	eDraw_HardwareBuffer,
+	eDraw_TransFrom,
+	eDraw_Render3D,
+	eDraw_TriangleFbo,
+	eDraw_Render3DMesh,
+}DrawType;
+
 typedef struct __tag_processor_handle
 {
 	int mRenderTime;
@@ -46,6 +59,7 @@ typedef struct __tag_processor_handle
 	SampleTransform *m_pSampleTransform;
 	SampleRender3D *m_pSampleRender3D;
 	SampleDrawFBO * m_pSampleDrawFBO;
+	SampleRender3DMesh *m_pSampleRender3DMesh;
 } ProcessorHandle, *LPProcessorHandle;
 
 #endif //HELLOTRIANGLE_PROCESSOR_H

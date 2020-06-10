@@ -89,6 +89,11 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 		MyProcessorHandle->m_pSampleDrawFBO->InitSample();
 	}
 
+	if (!MyProcessorHandle->m_pSampleRender3DMesh)
+	{
+		MyProcessorHandle->m_pSampleRender3DMesh = new SampleRender3DMesh ();
+	}
+
 	return ERROR_OK;
 }
 
@@ -125,34 +130,37 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::SaveImageToYuv(MyProcessorHandle->lpMyImageInfo_YUV, sPath);*/
 
 	}
-	int nDrawType = 6;
+	DrawType nDrawType = eDraw_Render3DMesh;
 	switch (nDrawType)
 	{
-		case 0:
+		case eDraw_Triangle:
 			ret = drawTriangle (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 			LOGD("onDrawFrame drawTriangle ret = %d", ret);
 			break;
-		case 1:
+		case eDraw_SimpleTexture:
 			ret = drawTexture(MyProcessorHandle->mShaderSetTexture.pShaderHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawTexture ret = %d", ret);
 			break;
-		case 2:
+		case eDraw_TextureFbo:
 			ret = drawFBO(MyProcessorHandle->mShaderSetFBO.pShaderHelper, MyProcessorHandle->mShaderSetFBONormal.pShaderHelper,
 						  MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawFBO ret = %d", ret);
 			break;
-		case 3:
+		case eDraw_HardwareBuffer:
 			ret = drawByHardwareBuffer(nullptr, MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
 			break;
-		case 4:
+		case eDraw_TransFrom:
 			ret = MyProcessorHandle->m_pSampleTransform->OnDrawFrame();
 			break;
-		case 5:
+		case eDraw_Render3D:
 			ret = MyProcessorHandle->m_pSampleRender3D->OnDrawFrame();
 			break;
-		case 6:
+		case eDraw_TriangleFbo:
 			ret = MyProcessorHandle->m_pSampleDrawFBO->OnDrawFrame();
+			break;
+		case eDraw_Render3DMesh:
+			ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
@@ -186,6 +194,8 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 		MyProcessorHandle->m_pSampleDrawFBO->UnInitSample();
 		SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
 	}
+
+	SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
 
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);

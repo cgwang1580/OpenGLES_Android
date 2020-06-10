@@ -7,11 +7,14 @@
 #include <ShaderHelper.h>
 #include <common.h>
 #include <MyDefineUtils.h>
-#include "vec3.hpp"
 #include "barHelper.h"
 #include "DrawHelper.h"
 
-struct Vertex
+#include "glm/vec3.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+struct Vertex1
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
@@ -46,7 +49,7 @@ private:
 			Vector3D<unsigned char> default_color = Vector3D<unsigned char>(255, 0, 0));
 
 	SimpleMesh m_SimpleMesh;
-	vector <Vertex> m_VertexLists;
+	vector <Vertex1> m_VertexLists;
 
 	vector <float> m_vertices;
 	vector <int> m_Indices;

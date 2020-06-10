@@ -1,5 +1,5 @@
 #include <common.h>
-#include "ext.hpp"
+#include "glm/ext.hpp"
 #include "LogAndroid.h"
 #include "ShaderHelper.h"
 
@@ -56,6 +56,8 @@ ShaderHelper::ShaderHelper(const char* vertexShaderCode, const char* fragmentSha
 		glDeleteShader(fragmentShader);
 	} while (false);
 }
+
+ShaderHelper::~ShaderHelper() {}
 
 int ShaderHelper::getShaderHelperState ()
 {

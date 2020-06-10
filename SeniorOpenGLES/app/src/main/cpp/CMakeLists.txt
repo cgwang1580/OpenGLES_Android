@@ -29,6 +29,8 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/inc
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/glrender
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/glrender/libassimp
         ${CMAKE_CURRENT_SOURCE_DIR}/header_out
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/draw
@@ -36,11 +38,11 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/shader
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper
         ${CMAKE_CURRENT_SOURCE_DIR}/render3d
-        ${CMAKE_CURRENT_SOURCE_DIR}/glm
 )
 
 link_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/lib/${TARGET_ABI}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/glrender/libassimp/lib/${TARGET_ABI}
         ${CLANG_STL_PATH}
 )
 
@@ -48,12 +50,14 @@ set(LIST_SRC_FILES native.cpp)
 
 list(APPEND LIST_SRC_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/shader_helper/ShaderHelper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleBase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/draw_utils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/processor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/AHardwareBufferHelper.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleTransform.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleRender3D.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleDrawFBO.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/draw/SampleRender3DMesh.cpp
         )
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections")
@@ -61,7 +65,14 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
 
 add_library(${PROCESSOR_SO_NAME} SHARED ${LIST_SRC_FILES})
 
-set(LIST_TARGET_LINK ${LIB_PNG_NAME} EGL GLESv3 nativewindow log)
+set(LIST_TARGET_LINK
+        ${LIB_PNG_NAME}
+        EGL
+        GLESv3
+        nativewindow
+        log
+        assimp
+        )
 
 if (IF_USE_STATIC_PNG_LIB EQUAL 1)
     list(APPEND LIST_TARGET_LINK z)
@@ -81,3 +92,9 @@ if (IF_USE_STATIC_PNG_LIB EQUAL 0)
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/libpng/${TARGET_ABI}/lib${LIB_PNG_NAME}.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${TARGET_ABI}/lib${LIB_PNG_NAME}.so
     )
 endif ()
+
+add_custom_command(
+        TARGET ${PROCESSOR_SO_NAME}
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../OpenGLESCommon/glrender/libassimp/lib/${TARGET_ABI}/libassimp.so ${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${TARGET_ABI}/libassimp.so
+)

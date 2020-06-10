@@ -2,9 +2,7 @@
 // Created by wcg3031 on 2020/5/22.
 //
 
-#include <detail/type_mat.hpp>
 #include "SampleRender3D.h"
-
 #include "LogAndroid.h"
 #include "common.h"
 #include "MyDefineUtils.h"
@@ -156,7 +154,7 @@ RESULT SampleRender3D::creteGLBuffer ()
 
 void SampleRender3D::destroyGLBuffer ()
 {
-	LOGD("SampleRender3D::destroyGLBuffer");
+	LOGD("SampleRender3D::DestroyGLBuffer");
 	SafeDeleteGLBuffer (1, &m_VAO);
 	SafeDeleteGLBuffer (1, &m_VBO);
 	SafeDeleteGLBuffer (1, &m_VBO_Position);
@@ -202,7 +200,7 @@ RESULT SampleRender3D::convertVertex ()
 {
 	LOGD("SampleRender3D::convertVertex");
 	// get vertex
-	Vertex tVertex;
+	Vertex1 tVertex;
 	for (int i = 0; i < m_SimpleMesh.vertices.size(); ++i)
 	{
 		glm::vec3 aPosition ((float)(m_SimpleMesh.vertices[i][0]), m_SimpleMesh.vertices[i][1], m_SimpleMesh.vertices[i][2]);

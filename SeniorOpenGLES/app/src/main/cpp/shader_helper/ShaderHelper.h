@@ -11,8 +11,8 @@
 #include <sstream>
 
 #include <GLES3/gl3.h>
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #define MY_MAX_PATH		256
 
@@ -23,6 +23,7 @@ class ShaderHelper {
 public:
 	// generator
 	ShaderHelper(const char* vertexShaderCode, const char* fragmentShaderCode);
+	~ShaderHelper();
 	int getShaderHelperState ();
 	void use();
 	void setBool(const string &name, bool value) const;

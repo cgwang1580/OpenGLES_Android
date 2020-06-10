@@ -191,7 +191,7 @@ RESULT SampleDrawFBO::creteGLBuffer ()
 
 void SampleDrawFBO::destroyGLBuffer ()
 {
-	LOGD("SampleDrawFBO::destroyGLBuffer");
+	LOGD("SampleDrawFBO::DestroyGLBuffer");
 	SafeDeleteGLBuffer (1, &m_VAO);
 	SafeDeleteGLBuffer (1, &m_VBO);
 	SafeDeleteGLBuffer (1, &m_EBO);
