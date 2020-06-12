@@ -13,10 +13,6 @@
 #include "unistd.h"
 #include "draw_utils.h"
 
-#define TEST_IMAGE_PATH_0	"/sdcard/OpenGLESTest/television.png"
-#define TEST_IMAGE_PATH_1	"/sdcard/OpenGLESTest/testlib.png"
-#define TEST_IMAGE_PATH_YUV_0	"/sdcard/OpenGLESTest/Img_test_1_640X480.nv12"
-
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
 	LOGD("onSurfaceCreated");
@@ -80,19 +76,19 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	if (nullptr == MyProcessorHandle->m_pSampleRender3D)
 	{
 		MyProcessorHandle->m_pSampleRender3D = new SampleRender3D ();
-		MyProcessorHandle->m_pSampleRender3D->InitSample();
+		//MyProcessorHandle->m_pSampleRender3D->InitSample();
 	}
 
 	if (nullptr == MyProcessorHandle->m_pSampleDrawFBO)
 	{
 		MyProcessorHandle->m_pSampleDrawFBO = new SampleDrawFBO ();
-		MyProcessorHandle->m_pSampleDrawFBO->InitSample();
+		//MyProcessorHandle->m_pSampleDrawFBO->InitSample();
 	}
 
-	/*if (!MyProcessorHandle->m_pSampleRender3DMesh)
+	if (!MyProcessorHandle->m_pSampleRender3DMesh)
 	{
 		MyProcessorHandle->m_pSampleRender3DMesh = new SampleRender3DMesh ();
-	}*/
+	}
 
 	return ERROR_OK;
 }
@@ -160,7 +156,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			ret = MyProcessorHandle->m_pSampleDrawFBO->OnDrawFrame();
 			break;
 		case eDraw_Render3DMesh:
-			//ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
+			ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
@@ -195,7 +191,7 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 		SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
 	}
 
-	//SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
+	SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
 
 	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
 	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);

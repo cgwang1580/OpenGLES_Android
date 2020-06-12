@@ -27,7 +27,7 @@ SampleBase::~SampleBase()
 void SampleBase::CreateGLBuffer ()
 {
 	LOGD("SampleBase::CreateGLBuffer");
-	glGenBuffers(1, &m_VAO);
+	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	glGenBuffers(1, &m_EBO);
 	DrawHelper::GetOneTexture(GL_TEXTURE_2D, &m_TextureId);

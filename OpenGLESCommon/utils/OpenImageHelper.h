@@ -110,7 +110,7 @@ public:
 	 */
 	static int LoadPngFromFile (const char* sPath, LPMyImageInfo lpMyImageInfo)
 	{
-		LOGD("LoadPngFromFile");
+		LOGD("LoadPngFromFile %s", sPath);
 		CHECK_NULL_INPUT(sPath)
 		CHECK_NULL_INPUT(lpMyImageInfo)
 		int ret = 0;
@@ -157,7 +157,25 @@ public:
 
 		png_image_free(&image);
 		SafeFree(buffer);
+
+		if (1 == ret)
+			ret = ERROR_OK;
+
 		return ret;
+	}
+
+	static void PrintMyImageInfo (const LPMyImageInfo lpMyImageInfo, const char *logInfo = nullptr)
+	{
+		if (!lpMyImageInfo)
+			return;
+		if (logInfo)
+			LOGD("%s OpenImageHelper::PrintMyImageInfo width = %d, height = %d, format = %d, channel = (%d, %d, %d, %d), buffer[0] = %p",
+					logInfo, lpMyImageInfo->width, lpMyImageInfo->height, lpMyImageInfo->format, lpMyImageInfo->channel[0],
+					lpMyImageInfo->channel[1], lpMyImageInfo->channel[2], lpMyImageInfo->channel[3], lpMyImageInfo->buffer[0]);
+		else
+			LOGD("OpenImageHelper::PrintMyImageInfo width = %d, height = %d, format = %d, channel = (%d, %d, %d, %d), buffer[0] = %p",
+				 lpMyImageInfo->width, lpMyImageInfo->height, lpMyImageInfo->format, lpMyImageInfo->channel[0],
+				 lpMyImageInfo->channel[1], lpMyImageInfo->channel[2], lpMyImageInfo->channel[3], lpMyImageInfo->buffer[0]);
 	}
 
 	static int SaveImageToYuv (const LPMyImageInfo lpMyImageInfo, const char* sPath)

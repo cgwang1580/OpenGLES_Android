@@ -19,6 +19,13 @@
 		}\
 	}
 
+#define LOGOUT_MAT4_MATH(_mat4_,_info_)		\
+	if (IF_LOGOUT_MAT_INFO) {	\
+		for (int i = 0; i < 4; ++i) { \
+			LOGD ("%s MATH (%f, %f, %f, %f)", _info_, _mat4_[0][i], _mat4_[1][i], _mat4_[2][i], _mat4_[3][i]); \
+		}\
+	}
+
 class DrawHelper
 {
 public:

@@ -20,11 +20,19 @@ public:
 		LOGD ("Model::Model modelPath = %s", modelPath.c_str());
 		loadModel(modelPath);
 	}
+	~Model()
+	{
+		LOGD("~Model");
+		m_Meshes.clear();
+		textures_loaded.clear();
+	}
 	void Draw (ShaderHelper *pShaderHelper)
 	{
 		LOGD ("Model::Draw");
-		for (auto val : m_Meshes)
-			val.DrawMesh(pShaderHelper);
+		for (int i = 0; i < m_Meshes.size(); ++i)
+		{
+			m_Meshes[i].DrawMesh(pShaderHelper);
+		}
 	}
 
 private:
@@ -44,6 +52,10 @@ private:
 			LOGE("loadModel error %s", importer.GetErrorString());
 			return ERROR_ASSIMP;
 		}
+		m_Directory = modePath.substr(0, modePath.find_last_of('/'));
+
+		processNode(pScene->mRootNode, pScene);
+
 		return ERROR_OK;
 	}
 	void processNode (const aiNode *pNode, const aiScene *pScene)
@@ -95,7 +107,7 @@ private:
 				vertex.TexCoords = glm::vec2(0.f, 0.f);
 
 			// tangent
-			vector.x = pMesh->mTangents[i].x;
+			/*vector.x = pMesh->mTangents[i].x;
 			vector.y = pMesh->mTangents[i].y;
 			vector.z = pMesh->mTangents[i].z;
 			vertex.Tangent = vector;
@@ -103,7 +115,7 @@ private:
 			vector.x = pMesh->mBitangents[i].x;
 			vector.y = pMesh->mBitangents[i].y;
 			vector.z = pMesh->mBitangents[i].z;
-			vertex.Bitangent = vector;
+			vertex.Bitangent = vector;*/
 			vertices.push_back(vertex);
 		}
 
@@ -136,7 +148,23 @@ private:
 		return Mesh(vertices, indices, textures);
 	}
 
-	std::vector <Texture> loadMaterialTextures (const aiMaterial *mat, const aiTextureType type, const std::string typeName)
+	std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+	{
+		std::vector<Texture> textures;
+		for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+		{
+			aiString str;
+			mat->GetTexture(type, i, &str);
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), m_Directory);
+			texture.type = typeName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+		}
+		return textures;
+	}
+
+	/*std::vector <Texture> loadMaterialTextures (const aiMaterial *mat, const aiTextureType type, const std::string typeName)
 	{
 		LOGD ("Model::loadMaterialTextures");
 		std::vector <Texture> textures;
@@ -166,29 +194,33 @@ private:
 			}
 		}
 		return textures;
-	}
+	}*/
 
 	unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false)
 	{
 		LOGD("Model::TextureFromFile %s, %s", path, directory.c_str());
 		std::string filename = std::string(path);
 		filename = directory + '/' + filename;
+		LOGD("TextureFromFile filename = %s", filename.c_str());
 
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
 
-		int width, height, nrComponents;
-		//unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+		int width = 0, height = 0;
 		MyImageInfo myImageInfo {0};
 		int ret = OpenImageHelper::LoadPngFromFile(filename.c_str(), &myImageInfo);
+		LOGD("TextureFromFile LoadPngFromFile ret = %d", ret);
+		OpenImageHelper::PrintMyImageInfo(&myImageInfo, "TextureFromFile myImageInfo");
 		if (ERROR_OK == ret)
 		{
-			GLenum format;
+			GLenum format = GL_RGB;
 			if (MY_FORMAT_RGB == myImageInfo.format)
 				format = GL_RGB;
 			else if (MY_FORMAT_RGBA == myImageInfo.format)
 				format = GL_RGBA;
 
+			width = myImageInfo.channel[0];
+			height = myImageInfo.height;
 			glBindTexture(GL_TEXTURE_2D, textureID);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, myImageInfo.buffer[0]);
 			glGenerateMipmap(GL_TEXTURE_2D);

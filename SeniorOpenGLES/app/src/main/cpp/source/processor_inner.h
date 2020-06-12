@@ -13,7 +13,9 @@
 #include "SampleDrawFBO.h"
 #include "SampleRender3DMesh.h"
 
-//using namespace std;
+#define TEST_IMAGE_PATH_0	"/sdcard/OpenGLESTest/television.png"
+#define TEST_IMAGE_PATH_1	"/sdcard/OpenGLESTest/testlib.png"
+#define TEST_IMAGE_PATH_YUV_0	"/sdcard/OpenGLESTest/Img_test_1_640X480.nv12"
 
 typedef struct __tag_color_set_
 {
@@ -58,6 +60,6 @@ typedef struct __tag_processor_handle
 	SampleTransform *m_pSampleTransform;
 	SampleRender3D *m_pSampleRender3D;
 	SampleDrawFBO * m_pSampleDrawFBO;
-	//SampleRender3DMesh *m_pSampleRender3DMesh;
+	SampleRender3DMesh *m_pSampleRender3DMesh;
 } ProcessorHandle, *LPProcessorHandle;
 

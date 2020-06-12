@@ -30,7 +30,7 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNom;
 layout (location = 2) in vec2 aTexCoord;
 
-out vec4 v_texCoord;
+out vec2 v_texCoord;
 uniform mat4 MVP;
 
 void main()
