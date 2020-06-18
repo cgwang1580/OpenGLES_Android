@@ -8,19 +8,19 @@ public class MyLog {
 
     static public void e (String tag, String message) {
         if (bShowLog) {
-            Log.e(tag, message);
+            Log.e(tag + " JAVA", message);
         }
     }
 
     static public void d (String tag, String message) {
         if (bShowLog) {
-            Log.d(tag, message);
+            Log.d(tag + " JAVA", message);
         }
     }
 
     static public void i (String tag, String message) {
         if (bShowLog) {
-            Log.i(tag, message);
+            Log.i(tag + " JAVA", message);
         }
     }
 }

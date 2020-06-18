@@ -41,3 +41,18 @@ void SampleBase::DestroyGLBuffer ()
 	SafeDeleteGLBuffer(1, &m_EBO);
 	SafeDeleteGLBuffer(1, &m_TextureId);
 }
+
+void SampleBase::SetMotionState (MotionState const motionState)
+{
+	LOGD("SampleBase::SetMotionState");
+	m_MotionState.eMotionType = motionState.eMotionType;
+	m_MotionState.transform_x = motionState.transform_x;
+	m_MotionState.transform_y = motionState.transform_y;
+	m_MotionState.transform_z = motionState.transform_z;
+}
+
+MotionState SampleBase::GetMotionState ()
+{
+	LOGD("SampleBase::GetMotionState");
+	return m_MotionState;
+}

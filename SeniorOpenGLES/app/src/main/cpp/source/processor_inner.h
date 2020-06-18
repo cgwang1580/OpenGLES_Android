@@ -48,6 +48,7 @@ typedef struct __tag_processor_handle
 {
 	int mRenderTime;
 	ColorSet mColorSet;
+	MotionState m_MotionState;
 	ShaderSet mShaderSetTriangle;
 	ShaderSet mShaderSetTexture;
 	ShaderSet mShaderSetFBO;

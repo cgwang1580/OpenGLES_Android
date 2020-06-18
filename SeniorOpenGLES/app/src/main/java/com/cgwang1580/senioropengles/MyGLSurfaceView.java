@@ -2,15 +2,27 @@ package com.cgwang1580.senioropengles;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.midi.MidiOutputPort;
 import android.opengl.GLSurfaceView;
+
+import com.cgwang1580.multimotionhelper.MotionStateGL;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MyGLSurfaceView{
 
+    private final static long MAX_RENDER_TIME = 10000;
+
     private final static String TAG = "MyGLSurfaceView";
     private final static int GLES_VERSION = 3;
-    protected GLSurfaceView mGLSurfaceView = null;
-    protected MyGLRenderer mGLRenderer = null;
-    protected int mRenderTime = 0;
+    private GLSurfaceView mGLSurfaceView = null;
+    private MyGLRenderer mGLRenderer = null;
+    private int mRenderTime = 0;
+    private int mGLViewWidth = 0;
+    private int mGLViewHeight = 0;
+    private MotionStateGL m_MotionStateGL;
+    private Lock m_MotionStateLock;
 
     MyGLSurfaceView () {}
 
@@ -18,16 +30,20 @@ public class MyGLSurfaceView{
 
         MyLog.d(TAG, "Init");
         mGLSurfaceView = ((Activity)context).findViewById(R.id.gl_surface_view);
-
         mGLSurfaceView.setEGLContextClientVersion(GLES_VERSION);
         mGLRenderer = new MyGLRenderer(this);
         mGLSurfaceView.setRenderer(mGLRenderer);
         mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mRenderTime = 0;
+        mGLViewWidth = 0;
+        mGLViewHeight = 0;
+        m_MotionStateLock = new ReentrantLock();
+        m_MotionStateGL = new MotionStateGL();
     }
 
     protected void requestRender () {
         MyLog.d(TAG, "requestRender");
-        if (null != mGLSurfaceView && mRenderTime < 10) {
+        if (null != mGLSurfaceView && mRenderTime < MAX_RENDER_TIME) {
             mGLSurfaceView.requestRender();
         }
     }
@@ -55,5 +71,46 @@ public class MyGLSurfaceView{
             });
             mRenderTime = 0;
         }
+    }
+
+    public int getGLViewWidth() {
+        return mGLViewWidth;
+    }
+    public int getGLViewHeight() {
+        return mGLViewHeight;
+    }
+    public void setGLViewSize(int GLViewWidth, int GLViewHeight) {
+        mGLViewWidth = GLViewWidth;
+        mGLViewHeight = GLViewHeight;
+    }
+    public int getRenderTime() {
+        return mRenderTime;
+    }
+    public void setRenderTime(int renderTime) {
+        mRenderTime = renderTime;
+    }
+
+    public void setMotionState (MotionStateGL motionState)
+    {
+        m_MotionStateLock.lock();
+        MyLog.d(TAG, "setMotionState");
+        m_MotionStateGL.mMotionType = motionState.mMotionType;
+        m_MotionStateGL.translate_x = motionState.translate_x;
+        m_MotionStateGL.translate_y = motionState.translate_y;
+        m_MotionStateGL.translate_z = motionState.translate_z;
+        m_MotionStateLock.unlock();
+    }
+
+    public MotionStateGL getMotionState()
+    {
+        MotionStateGL motionStateGL = new MotionStateGL();
+        m_MotionStateLock.lock();
+        MyLog.d(TAG, "getMotionState");
+        motionStateGL.mMotionType =  m_MotionStateGL.mMotionType;
+        motionStateGL.translate_x = m_MotionStateGL.translate_x;
+        motionStateGL.translate_y = m_MotionStateGL.translate_y;
+        motionStateGL.translate_z = m_MotionStateGL.translate_z;
+        m_MotionStateLock.unlock();
+        return motionStateGL;
     }
 }

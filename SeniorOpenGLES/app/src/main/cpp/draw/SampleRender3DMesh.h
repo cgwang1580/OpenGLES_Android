@@ -20,8 +20,18 @@ private:
 	void createRenderGLBuffer ();
 	void destroyRenderGLBuffer ();
 
+	void initMVPMatrix ();
+	void makeMVPByMotionState (const glm::mat4 model, const glm::mat4 view, const glm::mat4 projection,
+			glm::mat4 &dstMVP);
+	void makeViewMatrixByMotionState (const glm::mat4 srcView, glm::mat4 &dstView);
+
 	Model *m_pModel;
 	ShaderHelper *m_pShaderHelper;
+
+	long long m_Time;
+	glm::mat4 m_Model;
+	glm::mat4 m_View;
+	glm::mat4 m_Projection;
 
 	const char *pVertex_shader_0 =
 			GLES_VERSION_STRING

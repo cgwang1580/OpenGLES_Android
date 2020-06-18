@@ -2,6 +2,9 @@
 #include <string>
 #include "processor.h"
 
+#include "MotionState.h"
+#include "JniUtils.h"
+
 PHandle pProcessorHandle = NULL;
 
 extern "C"
@@ -35,5 +38,19 @@ Java_com_cgwang1580_senioropengles_MyGLRenderer_onSurfaceDestroyedJNI(JNIEnv *en
 {
 	// TODO: implement onSurfaceDestroyedJNI()
 	int ret = onSurfaceDestroyed(&pProcessorHandle);
+	return ret;
+}extern "C"
+JNIEXPORT jint JNICALL
+Java_com_cgwang1580_senioropengles_MyGLRenderer_SetMotionState(JNIEnv *env, jobject thiz, jobject motion_state_gl)
+{
+	// TODO: implement SetMotionState()
+	LOGD("Java_com_cgwang1580_senioropengles_MyGLRenderer_SetMotionState");
+	MotionState motionState;
+	int ret = ConvertMotionState (env, motion_state_gl, motionState);
+	LOGD("ConvertMotionState ret = %d", ret);
+
+	ret = setMotionState (pProcessorHandle, motionState);
+	LOGD("setMotionState ret = %d", ret);
+
 	return ret;
 }

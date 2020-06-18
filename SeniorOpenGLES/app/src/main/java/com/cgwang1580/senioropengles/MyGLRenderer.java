@@ -2,6 +2,8 @@ package com.cgwang1580.senioropengles;
 
 import android.opengl.GLSurfaceView;
 
+import com.cgwang1580.multimotionhelper.MotionStateGL;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -34,15 +36,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //GLES30.glViewport(0, 0, width, height);
         int ret = onSurfaceChangedJNI (width, height);
         MyLog.d(TAG, "onSurfaceChangedJNI ret = " + ret);
+        mMyGLSurfaceView.setGLViewSize(width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         MyLog.d(TAG, "onDrawFrame");
         //GLES30.glClear (GL10.GL_COLOR_BUFFER_BIT);
-        int ret = onDrawFrameJNI ();
+        MotionStateGL motionStateGL = new MotionStateGL();
+        motionStateGL = mMyGLSurfaceView.getMotionState();
+        int ret = SetMotionState(motionStateGL);
+        ret = onDrawFrameJNI ();
         MyLog.d(TAG, "onDrawFrameJNI ret = " + ret);
-        mMyGLSurfaceView.mRenderTime = mMyGLSurfaceView.mRenderTime + 1;
+        mMyGLSurfaceView.setRenderTime(mMyGLSurfaceView.getRenderTime() + 1);
         mMyGLSurfaceView.requestRender();
     }
 
@@ -68,4 +74,5 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public native int onSurfaceChangedJNI (int width, int height);
     public native int onDrawFrameJNI ();
     public native int onSurfaceDestroyedJNI ();
+    public native int SetMotionState (MotionStateGL motionStateGL);
 }

@@ -37,6 +37,10 @@ android {
             version "3.6.0"
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 task cleanLibs(type: Delete, description: 'delete libs copy') {

@@ -3,9 +3,13 @@ package com.cgwang1580.senioropengles;
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.widget.Toast;
-import com.cgwang1580.Permission.PermissionHelper;
-import com.cgwang1580.Permission.PermissionInterface;
+
+import com.cgwang1580.multimotionhelper.MotionStateGL;
+import com.cgwang1580.permission.PermissionHelper;
+import com.cgwang1580.permission.PermissionInterface;
+import com.cgwang1580.multimotionhelper.MultiMotionEventHelper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "MainActivity";
 
+    MultiMotionEventHelper mMultiMotionHelper = null;
+
     private final static String[]PermissionList = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE , Manifest.permission.CAMERA};
 
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestPermission ();
+        mMultiMotionHelper = new MultiMotionEventHelper();
     }
 
     public void requestPermission () {
@@ -42,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public int doPermissionFailed() {
-                Toast.makeText(MainActivity.this, "onCreate doPermissionFailed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "onCreate doPermissionFailed",
+                        Toast.LENGTH_SHORT).show();
                 return 0;
             }
         });
@@ -52,6 +60,18 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         PermissionHelper.onMyRequestPermissionsResult(requestCode, permissions, grantResults);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (null != mMultiMotionHelper) mMultiMotionHelper.handleViewEvent(event);
+        MotionStateGL motionStateGL = mMultiMotionHelper.getMotionStateGL(myGLSurfaceView.getGLViewWidth(),
+                myGLSurfaceView.getGLViewHeight());
+        motionStateGL.logoutTransform();
+
+        myGLSurfaceView.setMotionState(motionStateGL);
+
+        return true;
     }
 
     @Override

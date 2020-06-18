@@ -156,14 +156,37 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			ret = MyProcessorHandle->m_pSampleDrawFBO->OnDrawFrame();
 			break;
 		case eDraw_Render3DMesh:
-			ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
+			if (MyProcessorHandle->m_pSampleRender3DMesh)
+			{
+				MyProcessorHandle->m_pSampleRender3DMesh->SetMotionState(MyProcessorHandle->m_MotionState);
+				MyProcessorHandle->m_MotionState.setZero();
+				ret = MyProcessorHandle->m_pSampleRender3DMesh->OnDrawFrame();
+			}
 			break;
 		default:
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
 	}
-	sleep(1);
+	//usleep(1);
+	usleep(100);
 	return ret;
+}
+
+int setMotionState (const PHandle pProcessorHandle, MotionState const motionState)
+{
+	LOGD("setMotionState");
+	CHECK_NULL_INPUT (pProcessorHandle)
+	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)pProcessorHandle;
+
+	MyProcessorHandle->m_MotionState.eMotionType = motionState.eMotionType;
+	MyProcessorHandle->m_MotionState.transform_x = motionState.transform_x;
+	MyProcessorHandle->m_MotionState.transform_y = motionState.transform_y;
+	MyProcessorHandle->m_MotionState.transform_z = motionState.transform_z;
+
+	if (eMOTION_TRANSLATE == MyProcessorHandle->m_MotionState.eMotionType)
+		MyProcessorHandle->m_MotionState.logMotionState("setMotionState m_MotionState");
+
+	return ERROR_OK;
 }
 
 int onSurfaceDestroyed (PHandle *ppProcessorHandle)

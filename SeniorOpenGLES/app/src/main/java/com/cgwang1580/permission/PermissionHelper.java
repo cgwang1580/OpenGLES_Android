@@ -1,4 +1,4 @@
-package com.cgwang1580.Permission;
+package com.cgwang1580.permission;
 
 import android.app.Activity;
 import android.content.Context;
