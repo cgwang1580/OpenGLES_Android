@@ -13,6 +13,125 @@
 #include "unistd.h"
 #include "draw_utils.h"
 
+int CreateSampleAndShaderByDrawType (const PHandle pProcessorHandle, DrawType drawType)
+{
+	LOGD("CreateSampleAndShaderByDrawType drawType = %d", drawType);
+	CHECK_NULL_INPUT(pProcessorHandle)
+	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)pProcessorHandle;
+	int ret = ERROR_OK;
+	switch (drawType)
+	{
+		case eDraw_Triangle:
+			ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
+			LOGD("CreateSampleAndShaderByDrawType CreateShaderHelper mShaderSetTriangle ret = %d", ret);
+			break;
+		case eDraw_SimpleTexture:
+			ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
+			LOGD("CreateSampleAndShaderByDrawType CreateShaderHelper mShaderSetTexture ret = %d", ret);
+			break;
+		case eDraw_TextureFbo:
+			ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBO, fbo_vertex_shader, fbo_fragment_shader);
+			LOGD("CreateSampleAndShaderByDrawType CreateShaderHelper mShaderSetFBO ret = %d", ret);
+			ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
+			LOGD("CreateSampleAndShaderByDrawType CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
+			break;
+		case eDraw_HardwareBuffer:
+			if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
+			{
+				MyProcessorHandle->pHardwareBufferHelper = new AHardwareBufferHelper();
+			}
+			break;
+		case eDraw_TransFrom:
+			if (nullptr == MyProcessorHandle->m_pSampleTransform)
+			{
+				MyProcessorHandle->m_pSampleTransform = new SampleTransform ();
+				MyProcessorHandle->m_pSampleTransform->InitSample();
+			}
+			break;
+		case eDraw_Render3D:
+			if (nullptr == MyProcessorHandle->m_pSampleRender3D)
+			{
+				MyProcessorHandle->m_pSampleRender3D = new SampleRender3D ();
+				MyProcessorHandle->m_pSampleRender3D->InitSample();
+			}
+			break;
+		case eDraw_TriangleFbo:
+			if (nullptr == MyProcessorHandle->m_pSampleDrawFBO)
+			{
+				MyProcessorHandle->m_pSampleDrawFBO = new SampleDrawFBO ();
+				MyProcessorHandle->m_pSampleDrawFBO->InitSample();
+			}
+			break;
+		case eDraw_Render3DMesh:
+			if (!MyProcessorHandle->m_pSampleRender3DMesh)
+			{
+				MyProcessorHandle->m_pSampleRender3DMesh = new SampleRender3DMesh ();
+			}
+			break;
+		default:
+			LOGD("CreateSampleAndShaderByDrawType nDrawType = %d is unsupported", drawType);
+			break;
+	}
+	return ERROR_OK;
+}
+
+int DestroySampleAndShaderByDrawType (const PHandle pProcessorHandle, DrawType drawType)
+{
+	LOGD("DestroySampleAndShaderByDrawType drawType = %d", drawType);
+	CHECK_NULL_INPUT(pProcessorHandle)
+	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)pProcessorHandle;
+	int ret = ERROR_OK;
+
+	switch (drawType)
+	{
+		case eDraw_Triangle:
+			SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
+			break;
+		case eDraw_SimpleTexture:
+			SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
+			break;
+		case eDraw_TextureFbo:
+			SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
+			SafeDelete(MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
+			break;
+		case eDraw_HardwareBuffer:
+			if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
+			{
+				MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
+			}
+			SafeDelete (MyProcessorHandle->pHardwareBufferHelper);
+			break;
+		case eDraw_TransFrom:
+			if (MyProcessorHandle->m_pSampleTransform)
+			{
+				MyProcessorHandle->m_pSampleTransform->UnInitSample();
+				SafeDelete(MyProcessorHandle->m_pSampleTransform);
+			}
+			break;
+		case eDraw_Render3D:
+			if (MyProcessorHandle->m_pSampleRender3D)
+			{
+				MyProcessorHandle->m_pSampleRender3D->UnInitSample();
+				SafeDelete(MyProcessorHandle->m_pSampleRender3D);
+			}
+			break;
+		case eDraw_TriangleFbo:
+			if (MyProcessorHandle->m_pSampleDrawFBO)
+			{
+				MyProcessorHandle->m_pSampleDrawFBO->UnInitSample();
+				SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
+			}
+			break;
+		case eDraw_Render3DMesh:
+			SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
+			break;
+		default:
+			LOGD("onDrawFrame nDrawType = %d is unsupported", drawType);
+			break;
+	}
+	return ERROR_OK;
+}
+
 int onSurfaceCreated (PHandle *ppProcessorHandle)
 {
 	LOGD("onSurfaceCreated");
@@ -28,20 +147,10 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 	memset(MyProcessorHandle, 0, sizeof(ProcessorHandle));
 
-	/*int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTriangle, triangle_vertex_shader, triangle_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTriangle ret = %d", ret);*/
-
-	int ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetTexture, texture_vertex_shader, texture_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetTexture ret = %d", ret);
-
-	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBO, fbo_vertex_shader, fbo_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBO ret = %d", ret);
-
-	ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetFBONormal, fbo_vertex_shader, fbo_normal_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);
-
-	/*ret = CreateShaderHelper(&MyProcessorHandle->mShaderSetHardwareNormal, hardware_vertex_shader, hardware_normal_fragment_shader);
-	LOGD("onSurfaceCreated CreateShaderHelper mShaderSetFBONormal ret = %d", ret);*/
+	/// set which sample you want to get
+	MyProcessorHandle->m_eDrawType = eDraw_HardwareBuffer;
+	int ret = CreateSampleAndShaderByDrawType(MyProcessorHandle, MyProcessorHandle->m_eDrawType);
+	LOGD("CreateSampleAndShaderByDrawType ret = %d", ret);
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
@@ -51,7 +160,7 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo);
 	memset (MyProcessorHandle->lpMyImageInfo, 0 , sizeof(MyImageInfo));
 
-	/*if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
+	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo_YUV);
 	}
@@ -59,36 +168,8 @@ int onSurfaceCreated (PHandle *ppProcessorHandle)
 	CHECK_NULL_MALLOC(MyProcessorHandle->lpMyImageInfo_YUV);
 	memset(MyProcessorHandle->lpMyImageInfo_YUV, 0, sizeof(MyImageInfo));
 
-	if (nullptr == MyProcessorHandle->pHardwareBufferHelper)
-	{
-		MyProcessorHandle->pHardwareBufferHelper = new AHardwareBufferHelper();
-	}
-
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	if (nullptr == MyProcessorHandle->m_pSampleTransform)
-	{
-		MyProcessorHandle->m_pSampleTransform = new SampleTransform ();
-		MyProcessorHandle->m_pSampleTransform->InitSample();
-	}*/
-
-	if (nullptr == MyProcessorHandle->m_pSampleRender3D)
-	{
-		MyProcessorHandle->m_pSampleRender3D = new SampleRender3D ();
-		//MyProcessorHandle->m_pSampleRender3D->InitSample();
-	}
-
-	if (nullptr == MyProcessorHandle->m_pSampleDrawFBO)
-	{
-		MyProcessorHandle->m_pSampleDrawFBO = new SampleDrawFBO ();
-		//MyProcessorHandle->m_pSampleDrawFBO->InitSample();
-	}
-
-	if (!MyProcessorHandle->m_pSampleRender3DMesh)
-	{
-		MyProcessorHandle->m_pSampleRender3DMesh = new SampleRender3DMesh ();
-	}
 
 	return ERROR_OK;
 }
@@ -126,7 +207,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		OpenImageHelper::SaveImageToYuv(MyProcessorHandle->lpMyImageInfo_YUV, sPath);*/
 
 	}
-	DrawType nDrawType = eDraw_Render3DMesh;
+	DrawType nDrawType = MyProcessorHandle->m_eDrawType;
 	switch (nDrawType)
 	{
 		case eDraw_Triangle:
@@ -143,8 +224,9 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			LOGD("onDrawFrame drawFBO ret = %d", ret);
 			break;
 		case eDraw_HardwareBuffer:
-			ret = drawByHardwareBuffer(nullptr, MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
+			ret = drawByHardwareBuffer(MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
+			sleep(1);
 			break;
 		case eDraw_TransFrom:
 			ret = MyProcessorHandle->m_pSampleTransform->OnDrawFrame();
@@ -167,8 +249,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
 	}
-	//usleep(1);
-	usleep(100);
+	//usleep(100);
 	return ret;
 }
 
@@ -196,40 +277,8 @@ int onSurfaceDestroyed (PHandle *ppProcessorHandle)
 	CHECK_NULL_INPUT (*ppProcessorHandle);
 	LPProcessorHandle MyProcessorHandle = (LPProcessorHandle)*ppProcessorHandle;
 
-	if (MyProcessorHandle->m_pSampleTransform)
-	{
-		MyProcessorHandle->m_pSampleTransform->UnInitSample();
-		SafeDelete(MyProcessorHandle->m_pSampleTransform);
-	}
+	DestroySampleAndShaderByDrawType (MyProcessorHandle, MyProcessorHandle->m_eDrawType);
 
-	if (MyProcessorHandle->m_pSampleRender3D)
-	{
-		MyProcessorHandle->m_pSampleRender3D->UnInitSample();
-		SafeDelete(MyProcessorHandle->m_pSampleRender3D);
-	}
-
-	if (MyProcessorHandle->m_pSampleDrawFBO)
-	{
-		MyProcessorHandle->m_pSampleDrawFBO->UnInitSample();
-		SafeDelete(MyProcessorHandle->m_pSampleDrawFBO);
-	}
-
-	SafeDelete(MyProcessorHandle->m_pSampleRender3DMesh);
-
-	SafeDelete(MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
-	SafeDelete(MyProcessorHandle->mShaderSetTexture.pShaderHelper);
-	SafeDelete(MyProcessorHandle->mShaderSetFBO.pShaderHelper);
-	SafeDelete(MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
-	//SafeDelete(MyProcessorHandle->mShaderSetHardwareNormal.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetTriangle.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetTexture.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetFBO.pShaderHelper);
-	SafeDelete (MyProcessorHandle->mShaderSetFBONormal.pShaderHelper);
-	if (MyProcessorHandle->pHardwareBufferHelper && MyProcessorHandle->pHardwareBufferHelper->getCreateState())
-	{
-		MyProcessorHandle->pHardwareBufferHelper->destroyGPUBuffer();
-	}
-	SafeDelete (MyProcessorHandle->pHardwareBufferHelper);
 	if (nullptr != MyProcessorHandle->lpMyImageInfo)
 	{
 		OpenImageHelper::FreeMyImageInfo(MyProcessorHandle->lpMyImageInfo);

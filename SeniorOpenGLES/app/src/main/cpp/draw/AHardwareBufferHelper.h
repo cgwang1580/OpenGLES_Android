@@ -19,6 +19,7 @@
  * __ANDROID_API__ >= 26
  */
 
+/// notion: AHardwareBuffer may not work at some device, like note10 lsi
 typedef enum {
 	MY_AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNKNOWN = 5,
 	MY_AHARDWAREBUFFER_FORMAT_YCrCb_420_SP = 0x11
@@ -26,6 +27,15 @@ typedef enum {
 
 class AHardwareBufferHelper
 {
+public:
+	AHardwareBufferHelper ();
+	~AHardwareBufferHelper();
+	int createGPUBuffer (const int nWidth, const int nHeight, const int dstImageFormat);
+	void destroyGPUBuffer ();
+	int onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo);
+	bool getCreateState();
+	int getRenderNum ();
+
 private:
 	EGLDisplay pEGLDisplay;
 	EGLContext pEGLContext;
@@ -56,14 +66,5 @@ private:
 	int getGPUBufferData(LPMyImageInfo lpMyImageInfo);
 	int initGLBuffer ();
 	void unInitGLBuffer ();
-
-public:
-	AHardwareBufferHelper ();
-	~AHardwareBufferHelper();
-	int createGPUBuffer (const int nWidth, const int nHeight, const int format);
-	void destroyGPUBuffer ();
-	int onDrawFrame (const GLuint colorTextureId, LPMyImageInfo lpMyImageInfo);
-	bool getCreateState();
-	int getRenderNum ();
 };
 

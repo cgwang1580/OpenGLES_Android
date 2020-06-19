@@ -15,7 +15,7 @@ int drawTexture (ShaderHelper *pShaderHelper, const LPMyImageInfo lpMyImageInfo)
 
 int drawFBO (ShaderHelper *pShaderHelperFBO, ShaderHelper *pShaderHelperNormal, const LPMyImageInfo lpMyImageInfo);
 
-int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
+int drawByHardwareBuffer (const AHardwareBufferHelper *pHardwareBufferHelper, const LPMyImageInfo lpMyImageInfo);
 
 int drawByHardwareBuffer2 (const LPMyImageInfo lpMyImageInfo);
 

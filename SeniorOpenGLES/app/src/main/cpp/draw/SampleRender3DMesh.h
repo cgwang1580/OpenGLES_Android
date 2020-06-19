@@ -9,6 +9,9 @@
 #include "common.h"
 #include "ShaderHelper.h"
 
+/**
+ * SampleRender3DMesh is a easy sample to render 3D model, load model by assimp
+ */
 class SampleRender3DMesh : public SampleBase
 {
 public:

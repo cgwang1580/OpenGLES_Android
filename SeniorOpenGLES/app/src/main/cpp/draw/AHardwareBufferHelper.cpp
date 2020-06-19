@@ -81,7 +81,7 @@ AHardwareBufferHelper::~AHardwareBufferHelper()
 	setCreateState(false);
 }
 
-int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight, const int format)
+int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight, const int dstImageFormat)
 {
 	LOGD("createGPUBuffer");
 	int ret = ERROR_OK;
@@ -92,7 +92,7 @@ int AHardwareBufferHelper::createGPUBuffer (const int nWidth, const int nHeight,
 	aBufferDesc.height = (uint32_t)nHeight;
 	aBufferDesc.layers = 1;
 	int nBufferFormat = 0;
-	convertImageFormat2Hardware(format, nBufferFormat);
+	convertImageFormat2Hardware(dstImageFormat, nBufferFormat);
 	aBufferDesc.format = (uint32_t)nBufferFormat;
 	aBufferDesc.usage = (uint32_t)USAGE;
 	aBufferDesc.stride = (uint32_t)aBufferDesc.width;
@@ -305,7 +305,6 @@ int AHardwareBufferHelper::onDrawFrame (const GLuint colorTextureId, LPMyImageIn
 		ret = getGPUBufferData(lpMyImageInfo);
 	STOP_TIME("getGPUBufferData")
 	LOGE("drawByHardwareBuffer getGPUBufferDate ret = %d", ret);
-
 
 	// normal render
 	/*glViewport(0, 0, nScreenWidth, nScreenHeight);

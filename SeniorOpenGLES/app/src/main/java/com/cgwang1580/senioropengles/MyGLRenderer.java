@@ -12,6 +12,11 @@ import static com.cgwang1580.utils.CommonDefine.ERROR_OK;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final static String TAG = "MyGLRenderer";
+    ///**** test for jni begin ***///
+    /*private final static int TEST_STATIC_NUM = 10;
+    private final int TEST_NUM = 20;
+    private final String TEST_STRING = "test_string";*/
+    ///**** test for jni end *****///
     private MyGLSurfaceView mMyGLSurfaceView;
 
     public boolean getCreateState() {
@@ -48,7 +53,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         int ret = SetMotionState(motionStateGL);
         ret = onDrawFrameJNI ();
         MyLog.d(TAG, "onDrawFrameJNI ret = " + ret);
-        mMyGLSurfaceView.setRenderTime(mMyGLSurfaceView.getRenderTime() + 1);
+        mMyGLSurfaceView.setRenderCount(mMyGLSurfaceView.getRenderCount() + 1);
         mMyGLSurfaceView.requestRender();
     }
 

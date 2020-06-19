@@ -36,3 +36,43 @@ int ConvertMotionState (JNIEnv *env, jobject jMotionObject, MotionState &motionS
 
 	return ERROR_OK;
 }
+
+/// this function is used to test variable form java layer
+int ConvertJavaClassVariableTest (JNIEnv *env, jobject thiz)
+{
+	LOGD ("ConvertJavaClassVariableTest");
+	if (nullptr == env || nullptr == thiz)
+	{
+		LOGE("ConvertJavaClassVariableTest nullptr");
+		return ERROR_INPUT;
+	}
+	jclass myGLRenderClazz = env->GetObjectClass(thiz);
+	if (nullptr == myGLRenderClazz)
+		return ERROR_INPUT;
+
+	// get variable like int/double in thiz class
+	jfieldID testNunID = env->GetFieldID(myGLRenderClazz, "TEST_NUM", "I");
+	int testNum = env->GetIntField(thiz, testNunID);
+	LOGD("ConvertJavaClassVariableTest testNum = %d", testNum);
+
+	// get variable like String
+	jfieldID testStringID = env->GetFieldID(myGLRenderClazz, "TEST_STRING", "Ljava/lang/String;");
+	jstring jStringTestString = (jstring)env->GetObjectField(thiz, testStringID);
+	const char *testString = env->GetStringUTFChars(jStringTestString, 0);
+	LOGD("ConvertJavaClassVariableTest testString = %s", testString);
+
+	// get static variable like int/double
+	jfieldID testStaticNumID = env->GetStaticFieldID(myGLRenderClazz, "TEST_STATIC_NUM", "I");
+	int testStaticNum = env->GetStaticIntField(myGLRenderClazz, testStaticNumID);
+	LOGD("ConvertJavaClassVariableTest testStaticNum = %d", testStaticNum);
+
+	// get static variable String
+	jfieldID TAGFiledID = env->GetStaticFieldID(myGLRenderClazz, "TAG", "Ljava/lang/String;");
+	jstring jstringTAG = (jstring)env->GetStaticObjectField(myGLRenderClazz, TAGFiledID);
+	const char *sTag = env->GetStringUTFChars(jstringTAG, 0);
+	LOGD("ConvertJavaClassVariableTest sTag = %s", sTag);
+
+	// release
+	env->DeleteLocalRef(myGLRenderClazz);
+	return ERROR_OK;
+}

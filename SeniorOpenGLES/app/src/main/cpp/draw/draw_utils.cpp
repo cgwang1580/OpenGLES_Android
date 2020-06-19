@@ -255,32 +255,6 @@ int drawFBO (ShaderHelper *pShaderHelperFBO, ShaderHelper *pShaderHelperNormal, 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO[2]);
 	glBindVertexArray(GL_NONE);
 
-	/*GLfloat vVertices[] = {
-			-1.0f, -1.0f, 0.0f,		0.0f, 1.0f,
-			1.0f, -1.0f, 0.0f,		1.0f, 1.0f,
-			-1.0f,  1.0f, 0.0f,		0.0f, 0.0f,
-			1.0f,  1.0f, 0.0f,		1.0f, 0.0f,
-	};
-	GLuint indices[] = { 0, 1, 2, 1, 3, 2 };
-	GLuint VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const void*)(3* sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	glBindVertexArray(GL_NONE);*/
-
 	int nImageWidth = lpMyImageInfo->width;
 	int nImageHeight = lpMyImageInfo->height;
 
@@ -368,12 +342,11 @@ int drawFBO (ShaderHelper *pShaderHelperFBO, ShaderHelper *pShaderHelperNormal, 
 	return ERROR_OK;
 }
 
-int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
+int drawByHardwareBuffer (const AHardwareBufferHelper *pHardwareBufferHelper, LPMyImageInfo const lpMyImageInfo)
 {
 	LOGD ("drawByHardwareBuffer");
 
 	int ret = ERROR_OK;
-	//CHECK_NULL_INPUT(pShaderHelperHardwareNormal)
 	CHECK_NULL_INPUT(pHardwareBufferHelper)
 	CHECK_NULL_INPUT(lpMyImageInfo)
 	CHECK_NULL_INPUT(lpMyImageInfo->buffer[0])
@@ -393,7 +366,6 @@ int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHard
 	do
 	{
 		const GLenum TargetColor = GL_TEXTURE_2D;
-		const GLenum targetOES = GL_TEXTURE_EXTERNAL_OES;
 
 		// create a color texture as src
 		DrawHelper::GetOneTexture(TargetColor, &textureColorId);
@@ -416,6 +388,7 @@ int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHard
 		auto *pBufferHelper = (AHardwareBufferHelper *)pHardwareBufferHelper;
 		if (!pBufferHelper->getCreateState())
 		{
+			// dst image format
 			nImageFormat = MY_FORMAT_NV21;
 			ret = pBufferHelper->createGPUBuffer(nImageWidth, nImageHeight, nImageFormat);
 			LOGE("drawByHardwareBuffer createGPUBuffer ret = %d", ret);
@@ -426,7 +399,7 @@ int drawByHardwareBuffer (ShaderHelper *pShaderHelperHardwareNormal, const AHard
 		if (MY_FORMAT_NV21 == myImageInfo.format || MY_FORMAT_NV12 == myImageInfo.format)
 		{
 			char sPath[MAX_PATH]{0};
-			sprintf(sPath, "/sdcard/OpenGLESTest/gpu_%d_%dX%d.NV21", pBufferHelper->getRenderNum(), myImageInfo.channel[0], myImageInfo.height);
+			sprintf(sPath, "/sdcard/OpenGLESTest/gpu/gpu_%d_%dX%d.NV21", pBufferHelper->getRenderNum(), myImageInfo.channel[0], myImageInfo.height);
 			OpenImageHelper::SaveImageToYuv(&myImageInfo, sPath);
 		}
 		if (ERROR_OK != ret)

@@ -46,15 +46,13 @@ typedef enum
 
 typedef struct __tag_processor_handle
 {
+	DrawType m_eDrawType;
 	int mRenderTime;
-	ColorSet mColorSet;
 	MotionState m_MotionState;
 	ShaderSet mShaderSetTriangle;
 	ShaderSet mShaderSetTexture;
 	ShaderSet mShaderSetFBO;
 	ShaderSet mShaderSetFBONormal;
-	ShaderSet mShaderSetHardware;
-	ShaderSet mShaderSetHardwareNormal;
 	LPMyImageInfo lpMyImageInfo;
 	LPMyImageInfo lpMyImageInfo_YUV;
 	AHardwareBufferHelper *pHardwareBufferHelper;

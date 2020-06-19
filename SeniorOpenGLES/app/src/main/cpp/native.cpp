@@ -49,6 +49,9 @@ Java_com_cgwang1580_senioropengles_MyGLRenderer_SetMotionState(JNIEnv *env, jobj
 	int ret = ConvertMotionState (env, motion_state_gl, motionState);
 	LOGD("ConvertMotionState ret = %d", ret);
 
+	/*ret = ConvertJavaClassVariableTest (env, thiz);
+	LOGD("ConvertJavaClassVariableTest ret = %d", ret);*/
+
 	ret = setMotionState (pProcessorHandle, motionState);
 	LOGD("setMotionState ret = %d", ret);
 

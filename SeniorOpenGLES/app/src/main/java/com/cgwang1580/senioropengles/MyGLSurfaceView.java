@@ -2,7 +2,6 @@ package com.cgwang1580.senioropengles;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.midi.MidiOutputPort;
 import android.opengl.GLSurfaceView;
 
 import com.cgwang1580.multimotionhelper.MotionStateGL;
@@ -12,13 +11,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MyGLSurfaceView{
 
-    private final static long MAX_RENDER_TIME = 10000;
+    private final static long MAX_RENDER_COUNT = 10000;
 
     private final static String TAG = "MyGLSurfaceView";
     private final static int GLES_VERSION = 3;
     private GLSurfaceView mGLSurfaceView = null;
     private MyGLRenderer mGLRenderer = null;
-    private int mRenderTime = 0;
+    private int mRenderCount = 0;
     private int mGLViewWidth = 0;
     private int mGLViewHeight = 0;
     private MotionStateGL m_MotionStateGL;
@@ -34,7 +33,7 @@ public class MyGLSurfaceView{
         mGLRenderer = new MyGLRenderer(this);
         mGLSurfaceView.setRenderer(mGLRenderer);
         mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        mRenderTime = 0;
+        mRenderCount = 0;
         mGLViewWidth = 0;
         mGLViewHeight = 0;
         m_MotionStateLock = new ReentrantLock();
@@ -43,7 +42,7 @@ public class MyGLSurfaceView{
 
     protected void requestRender () {
         MyLog.d(TAG, "requestRender");
-        if (null != mGLSurfaceView && mRenderTime < MAX_RENDER_TIME) {
+        if (null != mGLSurfaceView && mRenderCount < MAX_RENDER_COUNT) {
             mGLSurfaceView.requestRender();
         }
     }
@@ -69,7 +68,7 @@ public class MyGLSurfaceView{
                     mGLRenderer.GLSurfaceDestroyed();
                 }
             });
-            mRenderTime = 0;
+            mRenderCount = 0;
         }
     }
 
@@ -83,11 +82,11 @@ public class MyGLSurfaceView{
         mGLViewWidth = GLViewWidth;
         mGLViewHeight = GLViewHeight;
     }
-    public int getRenderTime() {
-        return mRenderTime;
+    public int getRenderCount() {
+        return mRenderCount;
     }
-    public void setRenderTime(int renderTime) {
-        mRenderTime = renderTime;
+    public void setRenderCount(int renderCount) {
+        mRenderCount = renderCount;
     }
 
     public void setMotionState (MotionStateGL motionState)

@@ -95,13 +95,4 @@ static const std::string fbo_normal_fragment_shader = "#version 300 es\n"
 												 "    FragColor = texture (texture1, TexCoords) * vec4 (1.0);\n"
 												 "}";
 
-static const std::string hardware_normal_fragment_shader = "#version 300 es\n"
-												 "precision mediump float;\n"
-												 "out vec4 FragColor;\n"
-												 "in vec2 TexCoords;\n"
-												 "uniform sampler2D texture1;\n"
-												 "void main()\n"
-												 "{\n"
-												 "    FragColor = texture (texture1, TexCoords) * vec4 (1.0);\n"
-												 "}";
 
