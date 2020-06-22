@@ -194,8 +194,15 @@ int onDrawFrame (const PHandle pProcessorHandle)
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo && nullptr == MyProcessorHandle->lpMyImageInfo->buffer[0])
 	{
-		OpenImageHelper::LoadPngFromFile(TEST_IMAGE_PATH_0, MyProcessorHandle->lpMyImageInfo);
+		OpenImageHelper::LoadPngFromFile(TEST_IMAGE_PATH_2, MyProcessorHandle->lpMyImageInfo);
 		//OpenImageHelper::SaveImageToPng (MyProcessorHandle->lpMyImageInfo, "/sdcard/OpenGLESTest/testpng.png");
+		/*MyImageInfo myImageInfo {0};
+		myImageInfo.width = MyProcessorHandle->lpMyImageInfo->width;
+		myImageInfo.height = MyProcessorHandle->lpMyImageInfo->height;
+		myImageInfo.format = MY_FORMAT_RGBA;
+		myImageInfo.channel [0] = myImageInfo.channel[1] = myImageInfo.channel[2] = myImageInfo.width;
+		myImageInfo.buffer[0] = MyProcessorHandle->lpMyImageInfo->buffer[0];
+		OpenImageHelper::SaveImageToYuv(&myImageInfo, "/sdcard/OpenGLESTest/test_0_1280x720.RGB32");*/
 	}
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo_YUV && nullptr == MyProcessorHandle->lpMyImageInfo_YUV->buffer[0])
