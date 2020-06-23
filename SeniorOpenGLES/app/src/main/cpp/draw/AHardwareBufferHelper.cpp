@@ -8,14 +8,15 @@
 #include "LogAndroid.h"
 #include "cstring"
 
-const GLfloat vVertices[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,
-		1.0f,  1.0f, 0.0f,
+const GLfloat vTexCoors[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
 };
 
-const GLfloat vTexCoors[] = {
+// for FBO coordinate is inverse
+const GLfloat vTexCoors_FBO[] = {
 		0.0f, 1.0f,
 		1.0f, 1.0f,
 		0.0f, 0.0f,

@@ -47,7 +47,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
         MyLog.d(TAG, "onDrawFrame");
-        //GLES30.glClear (GL10.GL_COLOR_BUFFER_BIT);
         MotionStateGL motionStateGL = new MotionStateGL();
         motionStateGL = mMyGLSurfaceView.getMotionState();
         int ret = SetMotionState(motionStateGL);

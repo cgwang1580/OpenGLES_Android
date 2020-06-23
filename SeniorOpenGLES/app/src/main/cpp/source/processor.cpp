@@ -189,7 +189,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 	++MyProcessorHandle->mRenderTime;
 
 	int ret = ERROR_OK;
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (nullptr != MyProcessorHandle->lpMyImageInfo && nullptr == MyProcessorHandle->lpMyImageInfo->buffer[0])
@@ -233,7 +233,7 @@ int onDrawFrame (const PHandle pProcessorHandle)
 		case eDraw_HardwareBuffer:
 			ret = drawByHardwareBuffer(MyProcessorHandle->pHardwareBufferHelper, MyProcessorHandle->lpMyImageInfo);
 			LOGD("onDrawFrame drawByHardwareBuffer ret = %d", ret);
-			sleep(1);
+			usleep(33000);  // fps 33ms
 			break;
 		case eDraw_TransFrom:
 			ret = MyProcessorHandle->m_pSampleTransform->OnDrawFrame();
@@ -256,7 +256,6 @@ int onDrawFrame (const PHandle pProcessorHandle)
 			LOGD("onDrawFrame nDrawType = %d", nDrawType);
 			break;
 	}
-	//usleep(100);
 	return ret;
 }
 

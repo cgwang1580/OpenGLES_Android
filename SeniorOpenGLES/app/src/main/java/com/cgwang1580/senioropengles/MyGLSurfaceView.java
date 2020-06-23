@@ -10,10 +10,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MyGLSurfaceView{
-
-    private final static long MAX_RENDER_COUNT = 10000;
-
     private final static String TAG = "MyGLSurfaceView";
+    private final static long MAX_RENDER_COUNT = 500;
+
     private final static int GLES_VERSION = 3;
     private GLSurfaceView mGLSurfaceView = null;
     private MyGLRenderer mGLRenderer = null;
